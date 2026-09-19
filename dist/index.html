@@ -44,53 +44,40 @@
     button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
     .app { min-height: 100vh; overflow: hidden; }
-    .top-tools {
-      position: fixed;
-      z-index: 20;
-      top: env(safe-area-inset-top);
-      left: 0;
-      right: 0;
-      height: 64px;
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-    .brand-mark, .tool-btn { pointer-events: auto; border: 1px solid rgba(255,255,255,.75); box-shadow: 0 8px 22px rgba(17,39,68,.12); backdrop-filter: blur(12px); }
-    .brand-mark { width: 42px; height: 42px; border-radius: 15px; display: grid; place-items: center; background: rgba(17,39,68,.93); color: white; font-size: 1.13rem; font-weight: 950; letter-spacing: -.08em; }
-    .tools { display: flex; gap: 8px; }
-    .tool-btn { width: 42px; height: 42px; border-radius: 15px; background: rgba(255,255,255,.84); color: var(--ink); display: grid; place-items: center; }
     .screen { display: none; }
     .screen.active { display: block; animation: fadeIn .2s ease; }
     @keyframes fadeIn { from { opacity: .4; } }
 
-    .carousel-screen { min-height: calc(100dvh - 68px - env(safe-area-inset-bottom)); flex-direction: column; justify-content: center; padding-top: calc(55px + env(safe-area-inset-top)); }
+    .carousel-screen { min-height: calc(100dvh - 68px - env(safe-area-inset-bottom)); flex-direction: column; justify-content: center; padding-top: env(safe-area-inset-top); }
     .carousel-screen.active { display: flex; }
     .carousel-shell { position: relative; }
     .carousel-track {
       display: flex;
-      gap: 16px;
+      gap: 18px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
-      padding: 12px calc((100vw - min(82vw, 360px)) / 2) 18px;
+      padding: 18px calc((100vw - min(84vw, 370px)) / 2) 22px;
       scrollbar-width: none;
       touch-action: pan-x;
+      user-select: none;
+      cursor: grab;
     }
+    .carousel-track:active { cursor: grabbing; }
     .carousel-track::-webkit-scrollbar { display: none; }
     .character-card, .invite-card {
-      flex: 0 0 min(82vw, 360px);
-      height: min(69dvh, 590px);
+      flex: 0 0 min(84vw, 370px);
+      height: min(74dvh, 620px);
       min-height: 510px;
       scroll-snap-align: center;
       position: relative;
       overflow: hidden;
-      border-radius: 34px;
+      border-radius: 24px 6px 24px 6px;
       box-shadow: var(--shadow);
       isolation: isolate;
     }
-    .character-card { border: 3px solid var(--accent); background: var(--card-bg); }
+    .character-card { border: 4px solid var(--ink); background: var(--card-bg); box-shadow:0 0 0 4px var(--accent),var(--shadow); }
+    .character-card:after { content:""; position:absolute; z-index:6; inset:9px; border:1.5px solid rgba(255,255,255,.72); border-radius:16px 3px 16px 3px; pointer-events:none; }
     .theme-mint { --accent:#37c99a; --accent-2:#59a9e8; --card-bg:linear-gradient(155deg,#ddfff2 0%,#bcebdc 48%,#8bd0df 100%); --deep:#0f6e5c; }
     .theme-coral { --accent:#ed7d69; --accent-2:#35b8b0; --card-bg:linear-gradient(155deg,#fff0df 0%,#ffc6ac 48%,#7bd4ce 100%); --deep:#984734; }
     .theme-gold { --accent:#e1ad2d; --accent-2:#5899df; --card-bg:linear-gradient(155deg,#fff5c9 0%,#ffd36f 47%,#93c7ef 100%); --deep:#855e08; }
@@ -99,48 +86,50 @@
     .card-orbit { width:330px; height:330px; top:90px; left:50%; transform:translateX(-50%); }
     .card-orbit:before { width:250px; height:250px; inset:39px; border-style:dashed; }
     .card-orbit:after { width:12px; height:12px; top:20px; left:45px; background:#fff; border:4px solid var(--accent); }
-    .card-number { position:absolute; right:18px; top:12px; font-size:5.2rem; line-height:1; font-weight:950; color:rgba(255,255,255,.34); letter-spacing:-.08em; z-index:-1; }
-    .card-code { position:absolute; z-index:4; left:18px; top:18px; color:var(--deep); font-size:.72rem; font-weight:950; letter-spacing:.1em; text-transform:uppercase; }
-    .character-image { position:absolute; z-index:2; left:50%; bottom:104px; transform:translateX(-50%); height:74%; width:auto; max-width:96%; object-fit:contain; filter:drop-shadow(0 18px 18px rgba(19,35,58,.24)); pointer-events:none; }
+    .card-number { position:absolute; right:16px; top:43px; font-size:4.5rem; line-height:1; font-weight:950; color:rgba(255,255,255,.32); letter-spacing:-.08em; z-index:-1; }
+    .card-code { position:absolute; z-index:4; left:18px; top:17px; padding:5px 10px; border:2px solid var(--ink); border-radius:8px 2px 8px 2px; background:rgba(255,255,255,.82); color:var(--ink); font-size:.67rem; font-weight:950; letter-spacing:.1em; text-transform:uppercase; }
+    .health-power { position:absolute; z-index:4; right:18px; top:17px; display:flex; align-items:baseline; gap:4px; color:var(--ink); font-weight:950; text-shadow:0 1px 0 rgba(255,255,255,.7); }
+    .health-power small { font-size:.65rem; letter-spacing:.08em; }
+    .health-power strong { font-size:1.45rem; line-height:1; }
+    .character-image { position:absolute; z-index:2; left:50%; bottom:152px; transform:translateX(-50%); height:68%; width:auto; max-width:96%; object-fit:contain; filter:drop-shadow(0 18px 18px rgba(19,35,58,.24)); pointer-events:none; }
     .card-info {
       position:absolute;
       z-index:5;
       left:12px;
       right:12px;
       bottom:12px;
-      min-height:126px;
-      padding:16px 16px 14px;
-      border:1px solid rgba(255,255,255,.82);
-      border-radius:23px;
-      background:rgba(255,255,255,.88);
+      min-height:164px;
+      padding:14px 15px 13px;
+      border:2px solid var(--ink);
+      border-radius:16px 3px 16px 3px;
+      background:rgba(255,255,255,.91);
       backdrop-filter:blur(16px);
       box-shadow:0 8px 25px rgba(17,39,68,.1);
     }
     .card-name-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .card-name { margin:0; font-size:1.55rem; line-height:1.1; font-weight:950; letter-spacing:-.055em; }
     .card-role { display:block; margin-top:2px; color:var(--muted); font-size:.75rem; font-weight:800; }
-    .open-detail { width:46px; height:46px; flex:none; border:0; border-radius:16px; background:var(--navy); color:white; font-size:1.4rem; box-shadow:0 8px 18px rgba(17,39,68,.2); }
-    .record-line { margin:12px 0 0; padding-top:10px; border-top:1px solid rgba(17,39,68,.09); display:flex; align-items:center; gap:8px; font-size:.84rem; font-weight:800; }
+    .open-detail { min-width:78px; height:40px; flex:none; border:2px solid var(--ink); border-radius:9px 2px 9px 2px; background:var(--accent); color:var(--ink); padding:0 10px; font-size:.76rem; font-weight:950; box-shadow:3px 3px 0 var(--ink); }
+    .card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:11px; }
+    .card-stat { min-width:0; padding:7px 6px 6px; border:1.5px solid rgba(19,35,58,.28); border-radius:7px 2px 7px 2px; background:color-mix(in srgb,var(--accent) 15%,white); }
+    .card-stat span { display:block; color:var(--muted); font-size:.59rem; font-weight:850; }
+    .card-stat strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.76rem; }
+    .record-line { margin:9px 0 0; padding-top:8px; border-top:1.5px solid rgba(17,39,68,.16); display:flex; align-items:center; gap:8px; font-size:.76rem; font-weight:850; }
     .record-line i { width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 18%,transparent); }
 
-    .invite-card { border:3px dashed rgba(17,39,68,.28); background:linear-gradient(145deg,#f9fbff,#dce6f1); display:grid; place-items:center; text-align:center; color:var(--ink); }
+    .invite-card { border:4px dashed rgba(17,39,68,.38); border-radius:24px 6px 24px 6px; background:linear-gradient(145deg,#f9fbff,#dce6f1); display:grid; place-items:center; text-align:center; color:var(--ink); }
     .invite-card:before { content:""; position:absolute; width:290px; height:290px; border:1px dashed rgba(17,39,68,.15); border-radius:50%; }
     .invite-content { position:relative; z-index:2; }
     .invite-plus { width:92px; height:92px; display:grid; place-items:center; margin:0 auto 18px; border-radius:31px; background:white; border:1px solid var(--line); box-shadow:0 12px 30px rgba(17,39,68,.12); color:#538bd2; font-size:2.5rem; }
     .invite-card strong { display:block; font-size:1.3rem; letter-spacing:-.035em; }
     .invite-card span { display:block; margin-top:5px; color:var(--muted); font-size:.82rem; }
-    .carousel-controls { display:flex; justify-content:center; align-items:center; gap:14px; min-height:48px; }
-    .round-arrow { width:42px; height:42px; border:1px solid var(--line); border-radius:15px; background:white; color:var(--ink); font-size:1.1rem; box-shadow:0 6px 16px rgba(17,39,68,.06); }
-    .dots { display:flex; align-items:center; gap:7px; }
-    .dot { width:7px; height:7px; border:0; border-radius:99px; padding:0; background:#bec8d2; transition:.2s; }
-    .dot.active { width:22px; background:var(--navy); }
 
     .bottom-nav { position:fixed; z-index:18; left:0; right:0; bottom:0; height:calc(64px + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom); display:grid; grid-template-columns:repeat(2,1fr); border-top:1px solid var(--line); background:rgba(255,255,255,.96); backdrop-filter:blur(18px); }
     .nav-btn { border:0; background:transparent; color:#8996a6; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:.69rem; font-weight:850; }
     .nav-btn svg { width:22px; height:22px; }
     .nav-btn.active { color:var(--navy); }
 
-    .content-screen { width:min(100%,760px); margin:0 auto; padding:calc(80px + env(safe-area-inset-top)) 18px 32px; }
+    .content-screen { width:min(100%,760px); margin:0 auto; padding:calc(26px + env(safe-area-inset-top)) 18px 32px; }
     .content-screen h1 { margin:0 0 18px; font-size:1.65rem; letter-spacing:-.05em; }
     .records-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:11px; }
     .record-card { min-height:145px; border:1px solid var(--line); border-radius:22px; padding:16px; background:white; box-shadow:0 5px 16px rgba(17,39,68,.04); }
@@ -197,34 +186,31 @@
 
     @media (min-width:720px) {
       .carousel-track { padding-left:calc((100vw - 380px)/2); padding-right:calc((100vw - 380px)/2); }
-      .character-card, .invite-card { flex-basis:380px; }
+      .character-card, .invite-card { flex-basis:390px; }
       .records-grid { grid-template-columns:repeat(3,1fr); }
       .bottom-nav { left:50%; right:auto; width:760px; transform:translateX(-50%); border-left:1px solid var(--line); border-right:1px solid var(--line); }
       .sheet { left:50%; right:auto; width:520px; transform:translate(-50%,102%); }
       .sheet.open { transform:translate(-50%,0); }
     }
     @media (max-height:720px) {
-      .character-card, .invite-card { height:62dvh; min-height:440px; }
-      .character-image { height:71%; }
+      .character-card, .invite-card { height:69dvh; min-height:470px; }
+      .character-image { height:64%; }
     }
     @media (prefers-reduced-motion:reduce) { *,*:before,*:after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="top-tools" id="topTools"><div class="brand-mark" aria-label="we">we</div><div class="tools"><button class="tool-btn" id="installApp" aria-label="앱 설치">⇩</button><button class="tool-btn" aria-label="알림">●</button></div></div>
-
     <main>
       <section class="screen active carousel-screen" id="homeScreen">
         <div class="carousel-shell">
           <div class="carousel-track" id="carouselTrack" aria-label="가족 캐릭터">
-            <article class="character-card theme-mint" data-slide="minsu"><span class="card-code">WE 01</span><span class="card-number">01</span><div class="card-orbit"></div><img class="character-image" src="assets/health-avatar.png" alt="김민수 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김민수</h1><span class="card-role">나 · 39세</span></div><button class="open-detail" data-member="minsu" aria-label="김민수 상세 보기">›</button></div><p class="record-line"><i></i>오늘 기록된 불편함이 없어요</p></div></article>
-            <article class="character-card theme-coral" data-slide="mom"><span class="card-code">WE 02</span><span class="card-number">02</span><div class="card-orbit"></div><img class="character-image" src="assets/mother-avatar.png" alt="박영희 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">박영희</h1><span class="card-role">엄마 · 68세</span></div><button class="open-detail" data-member="mom" aria-label="박영희 상세 보기">›</button></div><p class="record-line"><i></i>아침 약 복용을 확인해 주세요</p></div></article>
-            <article class="character-card theme-gold" data-slide="dad"><span class="card-code">WE 03</span><span class="card-number">03</span><div class="card-orbit"></div><img class="character-image" src="assets/father-avatar.png" alt="김정호 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김정호</h1><span class="card-role">아빠 · 71세</span></div><button class="open-detail" data-member="dad" aria-label="김정호 상세 보기">›</button></div><p class="record-line"><i></i>허리 통증 3/10 · 이틀째</p></div></article>
-            <article class="character-card theme-violet" data-slide="jiyeon"><span class="card-code">WE 04</span><span class="card-number">04</span><div class="card-orbit"></div><img class="character-image" src="assets/sister-avatar.png" alt="김지연 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김지연</h1><span class="card-role">동생 · 35세</span></div><button class="open-detail" data-member="jiyeon" aria-label="김지연 상세 보기">›</button></div><p class="record-line"><i></i>두통이 심해 쉬고 있어요</p></div></article>
+            <article class="character-card theme-mint" data-slide="minsu"><span class="card-code">HEALTH 01</span><span class="health-power"><small>HEALTH</small><strong>96</strong></span><span class="card-number">01</span><div class="card-orbit"></div><img class="character-image" src="assets/health-avatar.png" alt="김민수 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김민수</h1><span class="card-role">나 · 39세</span></div><button class="open-detail" data-member="minsu" aria-label="김민수 상세 보기">상세</button></div><div class="card-stats"><div class="card-stat"><span>컨디션</span><strong>좋음</strong></div><div class="card-stat"><span>혈압</span><strong>118/76</strong></div><div class="card-stat"><span>걸음</span><strong>6,420</strong></div></div><p class="record-line"><i></i>오늘 기록된 불편함이 없어요</p></div></article>
+            <article class="character-card theme-coral" data-slide="mom"><span class="card-code">HEALTH 02</span><span class="health-power"><small>HEALTH</small><strong>82</strong></span><span class="card-number">02</span><div class="card-orbit"></div><img class="character-image" src="assets/mother-avatar.png" alt="박영희 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">박영희</h1><span class="card-role">엄마 · 68세</span></div><button class="open-detail" data-member="mom" aria-label="박영희 상세 보기">상세</button></div><div class="card-stats"><div class="card-stat"><span>혈압</span><strong>128/82</strong></div><div class="card-stat"><span>복약</span><strong>확인 필요</strong></div><div class="card-stat"><span>걸음</span><strong>4,280</strong></div></div><p class="record-line"><i></i>아침 약 복용을 확인해 주세요</p></div></article>
+            <article class="character-card theme-gold" data-slide="dad"><span class="card-code">HEALTH 03</span><span class="health-power"><small>HEALTH</small><strong>74</strong></span><span class="card-number">03</span><div class="card-orbit"></div><img class="character-image" src="assets/father-avatar.png" alt="김정호 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김정호</h1><span class="card-role">아빠 · 71세</span></div><button class="open-detail" data-member="dad" aria-label="김정호 상세 보기">상세</button></div><div class="card-stats"><div class="card-stat"><span>통증</span><strong>3/10</strong></div><div class="card-stat"><span>혈압</span><strong>134/86</strong></div><div class="card-stat"><span>지속</span><strong>2일</strong></div></div><p class="record-line"><i></i>허리 통증 3/10 · 이틀째</p></div></article>
+            <article class="character-card theme-violet" data-slide="jiyeon"><span class="card-code">HEALTH 04</span><span class="health-power"><small>HEALTH</small><strong>68</strong></span><span class="card-number">04</span><div class="card-orbit"></div><img class="character-image" src="assets/sister-avatar.png" alt="김지연 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김지연</h1><span class="card-role">동생 · 35세</span></div><button class="open-detail" data-member="jiyeon" aria-label="김지연 상세 보기">상세</button></div><div class="card-stats"><div class="card-stat"><span>통증</span><strong>7/10</strong></div><div class="card-stat"><span>체온</span><strong>37.8°</strong></div><div class="card-stat"><span>복약</span><strong>완료</strong></div></div><p class="record-line"><i></i>두통이 심해 쉬고 있어요</p></div></article>
             <button class="invite-card" id="openInvite" data-slide="invite" aria-label="가족 초대하기"><div class="invite-content"><div class="invite-plus">＋</div><strong>새 가족 초대</strong><span>링크로 가족을 연결해요</span></div></button>
           </div>
-          <div class="carousel-controls"><button class="round-arrow" id="prevSlide" aria-label="이전 가족">←</button><div class="dots" id="carouselDots" aria-label="캐릭터 위치"></div><button class="round-arrow" id="nextSlide" aria-label="다음 가족">→</button></div>
         </div>
       </section>
 
@@ -253,17 +239,13 @@
       dad:{name:'김정호',role:'아빠 · 71세',theme:'theme-gold',image:'assets/father-avatar.png',summary:'허리 통증 3/10 · 이틀째',metrics:[['통증','3 / 10','허리'],['지속','2일','어제 시작'],['혈압','134 / 86','오늘 7:30'],['기분','보통','아침']],history:[['허리 상태','어제보다 조금 나아요','오늘 7:42'],['온찜질','20분 완료','오늘 7:10'],['허리 통증','4/10으로 기록','어제 8:20']]},
       jiyeon:{name:'김지연',role:'동생 · 35세',theme:'theme-violet',image:'assets/sister-avatar.png',summary:'두통이 심해 쉬고 있어요',metrics:[['통증','7 / 10','두통'],['체온','37.8°','30분 전'],['복약','진통제','복용 완료'],['수분','2잔','오늘']],history:[['두통 기록','빛을 보면 더 아파요','30분 전'],['진통제 복용','1정 복용 완료','25분 전'],['가족 알림','민수에게 알림 전송','20분 전']]}
     };
-    let currentMember='minsu',currentSlide=0,installPrompt=null,scrollTimer;
+    let currentMember='minsu',currentSlide=0,scrollTimer;
     const screens={home:document.getElementById('homeScreen'),records:document.getElementById('recordsScreen'),detail:document.getElementById('detailScreen')};
-    const bottomNav=document.getElementById('bottomNav'),topTools=document.getElementById('topTools'),track=document.getElementById('carouselTrack'),slides=[...track.children],dotsHost=document.getElementById('carouselDots'),backdrop=document.getElementById('backdrop');
-    slides.forEach((_,index)=>{const dot=document.createElement('button');dot.className='dot'+(index===0?' active':'');dot.setAttribute('aria-label',`${index+1}번째 카드`);dot.addEventListener('click',()=>goSlide(index));dotsHost.appendChild(dot);});
-    const dots=[...dotsHost.children];
-    function updateDots(index){currentSlide=index;dots.forEach((dot,i)=>dot.classList.toggle('active',i===index));}
-    function goSlide(index){const next=(index+slides.length)%slides.length;slides[next].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});updateDots(next);}
-    document.getElementById('prevSlide').addEventListener('click',()=>goSlide(currentSlide-1));
-    document.getElementById('nextSlide').addEventListener('click',()=>goSlide(currentSlide+1));
-    track.addEventListener('scroll',()=>{clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>{const center=track.scrollLeft+track.clientWidth/2;let best=0,distance=Infinity;slides.forEach((slide,i)=>{const d=Math.abs(slide.offsetLeft+slide.offsetWidth/2-center);if(d<distance){distance=d;best=i;}});updateDots(best);},80);},{passive:true});
-    function showScreen(name){Object.entries(screens).forEach(([key,el])=>el.classList.toggle('active',key===name));document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.screen===name));const detail=name==='detail';bottomNav.style.display=detail?'none':'grid';topTools.style.display=detail?'none':'flex';document.body.style.paddingBottom=detail?'0':'';window.scrollTo({top:0,behavior:'smooth'});}
+    const bottomNav=document.getElementById('bottomNav'),track=document.getElementById('carouselTrack'),slides=[...track.children],backdrop=document.getElementById('backdrop');
+    function updateSlide(index){currentSlide=index;}
+    function goSlide(index){const next=(index+slides.length)%slides.length;slides[next].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});updateSlide(next);}
+    track.addEventListener('scroll',()=>{clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>{const center=track.scrollLeft+track.clientWidth/2;let best=0,distance=Infinity;slides.forEach((slide,i)=>{const d=Math.abs(slide.offsetLeft+slide.offsetWidth/2-center);if(d<distance){distance=d;best=i;}});updateSlide(best);},80);},{passive:true});
+    function showScreen(name){Object.entries(screens).forEach(([key,el])=>el.classList.toggle('active',key===name));document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.screen===name));const detail=name==='detail';bottomNav.style.display=detail?'none':'grid';document.body.style.paddingBottom=detail?'0':'';window.scrollTo({top:0,behavior:'smooth'});}
     document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>showScreen(btn.dataset.screen)));
     function openMember(id){const member=members[id];if(!member)return;currentMember=id;const card=document.getElementById('detailCard');card.className=`detail-card ${member.theme}`;const img=document.getElementById('detailImage');img.src=member.image;img.alt=member.name+' 캐릭터';document.getElementById('detailName').textContent=member.name;document.getElementById('detailRole').textContent=member.role;document.getElementById('detailSummary').textContent=member.summary;document.getElementById('metricGrid').innerHTML=member.metrics.map(([label,value,note])=>`<article class="metric"><span>${label}</span><strong>${value}</strong><small>${note}</small></article>`).join('');document.getElementById('historyList').innerHTML=member.history.map(([title,note,time])=>`<div class="history-row"><i class="history-dot"></i><div><strong>${title}</strong><span>${note}</span></div><time>${time}</time></div>`).join('');showScreen('detail');}
     document.querySelectorAll('.open-detail').forEach(btn=>btn.addEventListener('click',()=>openMember(btn.dataset.member)));
@@ -273,7 +255,6 @@
     document.getElementById('openInvite').addEventListener('click',()=>openSheet('inviteSheet'));document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',closeSheets));backdrop.addEventListener('click',closeSheets);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheets();if(e.key==='ArrowLeft'&&screens.home.classList.contains('active'))goSlide(currentSlide-1);if(e.key==='ArrowRight'&&screens.home.classList.contains('active'))goSlide(currentSlide+1);});
     function toast(message){const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400);}
     document.getElementById('openHealthLog').addEventListener('click',()=>{document.getElementById('healthFor').textContent=members[currentMember].name+'님의 상태를 남겨요.';openSheet('healthSheet');});document.getElementById('saveHealth').addEventListener('click',()=>{closeSheets();toast(members[currentMember].name+'님의 기록을 남겼어요.');});document.getElementById('sendCare').addEventListener('click',()=>toast(members[currentMember].name+'님에게 안부를 보냈어요.'));document.getElementById('copyInvite').addEventListener('click',async()=>{try{await navigator.clipboard.writeText('https://we.family/join/KIM-2409');}catch{}toast('초대 링크를 복사했어요.');});document.getElementById('shareInvite').addEventListener('click',()=>{closeSheets();toast('초대 링크를 준비했어요.');});
-    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});document.getElementById('installApp').addEventListener('click',async()=>{if(window.matchMedia('(display-mode: standalone)').matches)return toast('이미 앱으로 설치되어 있어요.');if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;}else toast('아이폰은 공유 버튼에서 “홈 화면에 추가”를 선택해 주세요.');});
     const params=new URLSearchParams(location.search);if(params.get('member')&&members[params.get('member')])openMember(params.get('member'));if(params.get('view')==='records')showScreen('records');if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
     const modelContext=document.modelContext;if(modelContext?.registerTool){const register=tool=>Promise.resolve(modelContext.registerTool(tool)).catch(()=>{});register({name:'open_family_member',title:'가족 상세 열기',description:'가족 구성원의 건강 상세 화면을 엽니다.',inputSchema:{type:'object',properties:{memberId:{type:'string',enum:Object.keys(members)}},required:['memberId'],additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute(input){if(!members[input?.memberId])throw new Error('가족 구성원을 찾을 수 없습니다.');openMember(input.memberId);return{memberId:input.memberId,name:members[input.memberId].name};}});register({name:'open_health_records',title:'건강 기록 열기',description:'가족 건강 기록 화면으로 이동합니다.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute(){showScreen('records');return{view:'records'};}});register({name:'start_family_invite',title:'가족 초대 시작',description:'가족 초대 링크를 만드는 창을 엽니다.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(){showScreen('home');goSlide(slides.length-1);openSheet('inviteSheet');return{status:'draft'};}});}
   </script>
