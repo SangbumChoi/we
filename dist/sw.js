@@ -1,5 +1,15 @@
-const CACHE_NAME = 'we-family-app-v3';
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/app-icon.svg', '/app-icon.png', '/assets/health-avatar.png'];
+const CACHE_NAME = 'we-family-app-v4';
+const APP_SHELL = [
+  '/',
+  '/index.html',
+  '/manifest.webmanifest',
+  '/app-icon.svg',
+  '/app-icon.png',
+  '/assets/health-avatar.png',
+  '/assets/mother-avatar.png',
+  '/assets/father-avatar.png',
+  '/assets/sister-avatar.png'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));

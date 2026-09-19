@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#10233f" />
-  <meta name="description" content="우리 가족의 건강 상태와 기록을 한눈에 확인하는 앱, we" />
+  <meta name="theme-color" content="#eef3f7" />
+  <meta name="description" content="우리 가족의 건강 캐릭터와 기록을 한눈에 확인하는 앱, we" />
   <meta name="application-name" content="we" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="we" />
   <title>we · 우리 가족 건강</title>
   <link rel="manifest" href="/manifest.webmanifest" />
@@ -15,25 +15,19 @@
   <link rel="icon" type="image/svg+xml" href="/app-icon.svg" />
   <style>
     :root {
-      --navy: #10233f;
-      --navy-soft: #1c385f;
-      --ink: #14243a;
-      --muted: #6f7d8f;
-      --canvas: #f3f6f8;
+      --ink: #13233a;
+      --muted: #6f7c8e;
+      --canvas: #eef3f7;
       --surface: #fff;
-      --line: #dfe6eb;
-      --green: #45c69b;
-      --green-soft: #e7f8f2;
-      --yellow: #e8c64f;
-      --yellow-soft: #fff8d9;
-      --orange: #f19a49;
-      --orange-soft: #fff0e0;
-      --red: #e96b72;
-      --red-soft: #ffeaec;
-      --blue: #5c96f5;
-      --shadow: 0 10px 28px rgba(16, 35, 63, .08);
+      --navy: #112744;
+      --line: rgba(17,39,68,.11);
+      --green: #39c898;
+      --yellow: #ecc445;
+      --orange: #f08c47;
+      --red: #ed6672;
+      --purple: #986ee8;
+      --shadow: 0 20px 50px rgba(29,48,75,.17);
     }
-
     * { box-sizing: border-box; }
     html { background: var(--canvas); }
     body {
@@ -44,395 +38,244 @@
       font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
       font-size: 16px;
       line-height: 1.45;
-      padding-bottom: calc(74px + env(safe-area-inset-bottom));
+      overscroll-behavior-x: none;
+      padding-bottom: calc(68px + env(safe-area-inset-bottom));
     }
     button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
-    .app { width: min(100%, 980px); margin: 0 auto; }
-    .app-bar {
-      position: sticky;
-      z-index: 12;
-      top: 0;
-      height: calc(62px + env(safe-area-inset-top));
-      padding: env(safe-area-inset-top) 18px 0;
+    .app { min-height: 100vh; overflow: hidden; }
+    .top-tools {
+      position: fixed;
+      z-index: 20;
+      top: env(safe-area-inset-top);
+      left: 0;
+      right: 0;
+      height: 64px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(243, 246, 248, .92);
-      backdrop-filter: blur(16px);
+      pointer-events: none;
     }
-    .brand { display: inline-flex; align-items: center; gap: 10px; }
-    .brand-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: var(--navy);
-      color: #fff;
-      font-size: 1.18rem;
-      font-weight: 900;
-      letter-spacing: -.08em;
-    }
-    .brand-name { font-size: 1.12rem; font-weight: 900; letter-spacing: -.04em; }
-    .bar-actions { display: flex; gap: 8px; }
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--surface);
-      color: var(--ink);
-      font-weight: 800;
-    }
-    .screen { display: none; padding: 18px 18px 28px; }
-    .screen.active { display: block; animation: screenIn .2s ease-out; }
-    @keyframes screenIn { from { opacity: 0; transform: translateY(5px); } }
-    .section-head { display: flex; justify-content: space-between; gap: 18px; align-items: end; margin: 4px 2px 16px; }
-    .section-head h1, .section-head h2 { margin: 0; letter-spacing: -.045em; }
-    .section-head h1 { font-size: clamp(1.55rem, 5vw, 2rem); }
-    .section-head h2 { font-size: 1.18rem; }
-    .section-head p { margin: 3px 0 0; color: var(--muted); font-size: .86rem; }
-    .updated { color: var(--muted); font-size: .78rem; white-space: nowrap; }
+    .brand-mark, .tool-btn { pointer-events: auto; border: 1px solid rgba(255,255,255,.75); box-shadow: 0 8px 22px rgba(17,39,68,.12); backdrop-filter: blur(12px); }
+    .brand-mark { width: 42px; height: 42px; border-radius: 15px; display: grid; place-items: center; background: rgba(17,39,68,.93); color: white; font-size: 1.13rem; font-weight: 950; letter-spacing: -.08em; }
+    .tools { display: flex; gap: 8px; }
+    .tool-btn { width: 42px; height: 42px; border-radius: 15px; background: rgba(255,255,255,.84); color: var(--ink); display: grid; place-items: center; }
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn .2s ease; }
+    @keyframes fadeIn { from { opacity: .4; } }
 
-    .status-legend { display: flex; gap: 12px; flex-wrap: wrap; margin: 0 2px 18px; color: var(--muted); font-size: .73rem; }
-    .legend-item { display: inline-flex; align-items: center; gap: 5px; }
-    .legend-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
-    .legend-dot.yellow { background: var(--yellow); }
-    .legend-dot.orange { background: var(--orange); }
-    .legend-dot.red { background: var(--red); }
-
-    .family-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-    .member-card {
-      position: relative;
-      min-height: 202px;
-      border: 3px solid var(--status-color);
-      border-radius: 24px;
-      padding: 16px;
-      text-align: left;
-      background: var(--surface);
-      color: var(--ink);
-      box-shadow: 0 5px 18px rgba(16,35,63,.045);
-      overflow: hidden;
-      transition: transform .16s ease, box-shadow .16s ease;
-    }
-    .member-card:active { transform: scale(.98); }
-    .member-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-    .member-card.status-green { --status-color: var(--green); --status-soft: var(--green-soft); }
-    .member-card.status-yellow { --status-color: var(--yellow); --status-soft: var(--yellow-soft); }
-    .member-card.status-orange { --status-color: var(--orange); --status-soft: var(--orange-soft); }
-    .member-card.status-red { --status-color: var(--red); --status-soft: var(--red-soft); }
-    .card-top { display: flex; justify-content: space-between; align-items: start; }
-    .member-avatar {
-      width: 66px;
-      height: 66px;
-      border-radius: 22px;
-      display: grid;
-      place-items: center;
-      background: var(--status-soft);
-      font-size: 2rem;
-      overflow: hidden;
-    }
-    .member-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; transform: scale(2.05); transform-origin: 50% 0; }
-    .card-arrow { color: #9ba7b5; font-size: 1.25rem; }
-    .member-name { margin: 13px 0 0; font-size: 1.08rem; font-weight: 900; letter-spacing: -.03em; }
-    .member-role { margin-left: 5px; color: var(--muted); font-size: .73rem; font-weight: 700; }
-    .member-summary { margin: 5px 0 0; font-size: .86rem; font-weight: 750; min-height: 2.5em; }
-    .member-time { display: block; margin-top: 7px; color: var(--muted); font-size: .7rem; }
-    .invite-card {
-      min-height: 202px;
-      border: 2px dashed #aebbc6;
-      border-radius: 24px;
-      background: rgba(255,255,255,.55);
-      color: var(--ink);
-      display: grid;
-      place-items: center;
-      text-align: center;
-      padding: 18px;
-    }
-    .invite-plus { width: 58px; height: 58px; border-radius: 20px; display: grid; place-items: center; margin: 0 auto 10px; background: white; border: 1px solid var(--line); font-size: 1.7rem; color: var(--blue); }
-    .invite-card strong { display: block; }
-    .invite-card span { color: var(--muted); font-size: .75rem; }
-
-    .news { margin-top: 30px; }
-    .news-list { display: grid; gap: 10px; }
-    .news-item {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--surface);
-      padding: 14px;
-      display: grid;
-      grid-template-columns: 46px 1fr auto;
-      gap: 12px;
-      align-items: center;
-      text-align: left;
-      color: var(--ink);
-    }
-    .news-avatar { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; background: var(--green-soft); font-size: 1.3rem; }
-    .news-item:nth-child(2) .news-avatar { background: var(--orange-soft); }
-    .news-item:nth-child(3) .news-avatar { background: var(--red-soft); }
-    .news-copy strong { display: block; font-size: .86rem; }
-    .news-copy span { display: block; color: var(--muted); font-size: .75rem; margin-top: 2px; }
-    .news-time { color: var(--muted); font-size: .68rem; }
-
-    .bottom-nav {
-      position: fixed;
-      z-index: 15;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: calc(66px + env(safe-area-inset-bottom));
-      padding-bottom: env(safe-area-inset-bottom);
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      background: rgba(255,255,255,.96);
-      border-top: 1px solid var(--line);
-      backdrop-filter: blur(18px);
-    }
-    .nav-btn { border: 0; background: transparent; color: #8b97a7; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; font-size: .7rem; font-weight: 800; }
-    .nav-btn svg { width: 22px; height: 22px; }
-    .nav-btn.active { color: var(--navy); }
-
-    .back-row { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; }
-    .back-btn { width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 14px; background: white; color: var(--ink); }
-    .back-row strong { font-size: 1.05rem; }
-    .detail-hero {
-      border: 3px solid var(--status-color);
-      border-radius: 26px;
-      background: white;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: 88px 1fr;
+    .carousel-screen { min-height: calc(100dvh - 68px - env(safe-area-inset-bottom)); flex-direction: column; justify-content: center; padding-top: calc(55px + env(safe-area-inset-top)); }
+    .carousel-screen.active { display: flex; }
+    .carousel-shell { position: relative; }
+    .carousel-track {
+      display: flex;
       gap: 16px;
-      align-items: center;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 12px calc((100vw - min(82vw, 360px)) / 2) 18px;
+      scrollbar-width: none;
+      touch-action: pan-x;
     }
-    .detail-hero.status-green { --status-color: var(--green); --status-soft: var(--green-soft); }
-    .detail-hero.status-yellow { --status-color: var(--yellow); --status-soft: var(--yellow-soft); }
-    .detail-hero.status-orange { --status-color: var(--orange); --status-soft: var(--orange-soft); }
-    .detail-hero.status-red { --status-color: var(--red); --status-soft: var(--red-soft); }
-    .detail-avatar { width: 88px; height: 88px; border-radius: 28px; background: var(--status-soft); display: grid; place-items: center; font-size: 2.65rem; overflow: hidden; }
-    .detail-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; transform: scale(2); transform-origin: 50% 0; }
-    .detail-hero h1 { margin: 0; font-size: 1.45rem; letter-spacing: -.04em; }
-    .detail-role { color: var(--muted); font-size: .78rem; }
-    .detail-summary { margin: 7px 0 0; font-weight: 800; }
-    .detail-actions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 2px; }
-    .primary-btn, .secondary-btn { min-height: 46px; border-radius: 15px; padding: 0 15px; font-weight: 850; }
-    .primary-btn { border: 0; background: var(--navy); color: white; }
-    .secondary-btn { border: 1px solid var(--line); background: white; color: var(--ink); }
-    .detail-section { margin-top: 24px; }
-    .detail-section h2 { margin: 0 2px 12px; font-size: 1.05rem; letter-spacing: -.03em; }
-    .metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .metric { background: white; border: 1px solid var(--line); border-radius: 18px; padding: 15px; }
-    .metric span { display: block; color: var(--muted); font-size: .72rem; }
-    .metric strong { display: block; font-size: 1.2rem; margin-top: 4px; }
-    .metric small { color: var(--muted); font-size: .68rem; }
-    .history-list { background: white; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
-    .history-row { display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: start; padding: 15px; border-bottom: 1px solid var(--line); }
-    .history-row:last-child { border-bottom: 0; }
-    .history-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); margin-top: 5px; }
-    .history-row strong { display: block; font-size: .85rem; }
-    .history-row span { color: var(--muted); font-size: .73rem; }
-    .history-row time { color: var(--muted); font-size: .68rem; white-space: nowrap; }
-
-    .records-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .record-card { background: white; border: 1px solid var(--line); border-radius: 20px; padding: 16px; }
-    .record-card h3 { margin: 0; font-size: .96rem; }
-    .record-card p { margin: 5px 0 12px; color: var(--muted); font-size: .75rem; }
-    .record-person { display: flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 800; }
-    .record-person i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); }
-    .record-person i.orange { background: var(--orange); }
-    .record-person i.yellow { background: var(--yellow); }
-
-    .backdrop { position: fixed; inset: 0; z-index: 30; background: rgba(8,20,36,.5); opacity: 0; pointer-events: none; transition: .2s; backdrop-filter: blur(3px); }
-    .backdrop.open { opacity: 1; pointer-events: auto; }
-    .sheet { position: fixed; z-index: 31; left: 0; right: 0; bottom: 0; max-height: 88vh; overflow: auto; padding: 12px 20px calc(24px + env(safe-area-inset-bottom)); border-radius: 28px 28px 0 0; background: white; transform: translateY(102%); transition: .26s ease; }
-    .sheet.open { transform: translateY(0); }
-    .sheet-grip { width: 42px; height: 5px; border-radius: 99px; background: #d7dee4; margin: 0 auto 18px; }
-    .sheet-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
-    .sheet-head h2 { margin: 0; font-size: 1.25rem; letter-spacing: -.035em; }
-    .sheet-head p { margin: 3px 0 0; color: var(--muted); font-size: .78rem; }
-    .close-btn { width: 38px; height: 38px; border: 0; background: var(--canvas); border-radius: 12px; font-size: 1.2rem; }
-    .form-label { display: block; margin: 18px 0 7px; font-weight: 800; font-size: .83rem; }
-    .form-input, .form-select { width: 100%; min-height: 47px; border: 1px solid var(--line); border-radius: 14px; padding: 11px 13px; background: white; }
-    textarea.form-input { min-height: 96px; resize: vertical; }
-    .sheet .primary-btn { width: 100%; margin-top: 18px; }
-    .invite-code { margin-top: 18px; padding: 15px; border-radius: 16px; background: var(--canvas); display: flex; justify-content: space-between; gap: 10px; align-items: center; }
-    .invite-code code { font-size: .78rem; overflow: hidden; text-overflow: ellipsis; }
-    .copy-btn { border: 0; border-radius: 11px; background: var(--navy); color: white; padding: 8px 11px; font-size: .75rem; font-weight: 800; }
-    .toast { position: fixed; z-index: 50; left: 50%; bottom: calc(82px + env(safe-area-inset-bottom)); width: min(calc(100% - 32px), 420px); transform: translate(-50%, 15px); opacity: 0; pointer-events: none; background: var(--navy); color: white; border-radius: 15px; padding: 13px 16px; text-align: center; font-weight: 750; transition: .2s; box-shadow: var(--shadow); }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-    @media (min-width: 700px) {
-      .screen { padding: 28px 24px 48px; }
-      .family-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
-      .member-card, .invite-card { min-height: 220px; }
-      .bottom-nav { left: 50%; right: auto; width: min(100%, 980px); transform: translateX(-50%); border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
-      .detail-hero { grid-template-columns: 110px 1fr auto; padding: 24px; }
-      .detail-avatar { width: 110px; height: 110px; }
-      .detail-actions { grid-column: auto; margin: 0; width: 270px; }
-      .metric-grid { grid-template-columns: repeat(4, 1fr); }
-      .records-summary { grid-template-columns: repeat(3, 1fr); }
-      .sheet { left: 50%; right: auto; width: 520px; transform: translate(-50%, 102%); }
-      .sheet.open { transform: translate(-50%, 0); }
+    .carousel-track::-webkit-scrollbar { display: none; }
+    .character-card, .invite-card {
+      flex: 0 0 min(82vw, 360px);
+      height: min(69dvh, 590px);
+      min-height: 510px;
+      scroll-snap-align: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      isolation: isolate;
     }
-    @media (prefers-reduced-motion: reduce) { *, *:before, *:after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+    .character-card { border: 3px solid var(--accent); background: var(--card-bg); }
+    .theme-mint { --accent:#37c99a; --accent-2:#59a9e8; --card-bg:linear-gradient(155deg,#ddfff2 0%,#bcebdc 48%,#8bd0df 100%); --deep:#0f6e5c; }
+    .theme-coral { --accent:#ed7d69; --accent-2:#35b8b0; --card-bg:linear-gradient(155deg,#fff0df 0%,#ffc6ac 48%,#7bd4ce 100%); --deep:#984734; }
+    .theme-gold { --accent:#e1ad2d; --accent-2:#5899df; --card-bg:linear-gradient(155deg,#fff5c9 0%,#ffd36f 47%,#93c7ef 100%); --deep:#855e08; }
+    .theme-violet { --accent:#956ee1; --accent-2:#54d3bc; --card-bg:linear-gradient(155deg,#f4e9ff 0%,#c7adf3 50%,#7adbc9 100%); --deep:#5d3e99; }
+    .card-orbit, .card-orbit:before, .card-orbit:after { position:absolute; border-radius:50%; border:1px solid rgba(255,255,255,.6); content:""; pointer-events:none; }
+    .card-orbit { width:330px; height:330px; top:90px; left:50%; transform:translateX(-50%); }
+    .card-orbit:before { width:250px; height:250px; inset:39px; border-style:dashed; }
+    .card-orbit:after { width:12px; height:12px; top:20px; left:45px; background:#fff; border:4px solid var(--accent); }
+    .card-number { position:absolute; right:18px; top:12px; font-size:5.2rem; line-height:1; font-weight:950; color:rgba(255,255,255,.34); letter-spacing:-.08em; z-index:-1; }
+    .card-code { position:absolute; z-index:4; left:18px; top:18px; color:var(--deep); font-size:.72rem; font-weight:950; letter-spacing:.1em; text-transform:uppercase; }
+    .character-image { position:absolute; z-index:2; left:50%; bottom:104px; transform:translateX(-50%); height:74%; width:auto; max-width:96%; object-fit:contain; filter:drop-shadow(0 18px 18px rgba(19,35,58,.24)); pointer-events:none; }
+    .card-info {
+      position:absolute;
+      z-index:5;
+      left:12px;
+      right:12px;
+      bottom:12px;
+      min-height:126px;
+      padding:16px 16px 14px;
+      border:1px solid rgba(255,255,255,.82);
+      border-radius:23px;
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(16px);
+      box-shadow:0 8px 25px rgba(17,39,68,.1);
+    }
+    .card-name-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .card-name { margin:0; font-size:1.55rem; line-height:1.1; font-weight:950; letter-spacing:-.055em; }
+    .card-role { display:block; margin-top:2px; color:var(--muted); font-size:.75rem; font-weight:800; }
+    .open-detail { width:46px; height:46px; flex:none; border:0; border-radius:16px; background:var(--navy); color:white; font-size:1.4rem; box-shadow:0 8px 18px rgba(17,39,68,.2); }
+    .record-line { margin:12px 0 0; padding-top:10px; border-top:1px solid rgba(17,39,68,.09); display:flex; align-items:center; gap:8px; font-size:.84rem; font-weight:800; }
+    .record-line i { width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 18%,transparent); }
+
+    .invite-card { border:3px dashed rgba(17,39,68,.28); background:linear-gradient(145deg,#f9fbff,#dce6f1); display:grid; place-items:center; text-align:center; color:var(--ink); }
+    .invite-card:before { content:""; position:absolute; width:290px; height:290px; border:1px dashed rgba(17,39,68,.15); border-radius:50%; }
+    .invite-content { position:relative; z-index:2; }
+    .invite-plus { width:92px; height:92px; display:grid; place-items:center; margin:0 auto 18px; border-radius:31px; background:white; border:1px solid var(--line); box-shadow:0 12px 30px rgba(17,39,68,.12); color:#538bd2; font-size:2.5rem; }
+    .invite-card strong { display:block; font-size:1.3rem; letter-spacing:-.035em; }
+    .invite-card span { display:block; margin-top:5px; color:var(--muted); font-size:.82rem; }
+    .carousel-controls { display:flex; justify-content:center; align-items:center; gap:14px; min-height:48px; }
+    .round-arrow { width:42px; height:42px; border:1px solid var(--line); border-radius:15px; background:white; color:var(--ink); font-size:1.1rem; box-shadow:0 6px 16px rgba(17,39,68,.06); }
+    .dots { display:flex; align-items:center; gap:7px; }
+    .dot { width:7px; height:7px; border:0; border-radius:99px; padding:0; background:#bec8d2; transition:.2s; }
+    .dot.active { width:22px; background:var(--navy); }
+
+    .bottom-nav { position:fixed; z-index:18; left:0; right:0; bottom:0; height:calc(64px + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom); display:grid; grid-template-columns:repeat(2,1fr); border-top:1px solid var(--line); background:rgba(255,255,255,.96); backdrop-filter:blur(18px); }
+    .nav-btn { border:0; background:transparent; color:#8996a6; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:.69rem; font-weight:850; }
+    .nav-btn svg { width:22px; height:22px; }
+    .nav-btn.active { color:var(--navy); }
+
+    .content-screen { width:min(100%,760px); margin:0 auto; padding:calc(80px + env(safe-area-inset-top)) 18px 32px; }
+    .content-screen h1 { margin:0 0 18px; font-size:1.65rem; letter-spacing:-.05em; }
+    .records-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:11px; }
+    .record-card { min-height:145px; border:1px solid var(--line); border-radius:22px; padding:16px; background:white; box-shadow:0 5px 16px rgba(17,39,68,.04); }
+    .record-card .mini-person { width:38px; height:38px; border-radius:13px; display:grid; place-items:center; margin-bottom:20px; background:#eaf5ff; font-size:1.15rem; overflow:hidden; }
+    .mini-person img { width:100%; height:100%; object-fit:cover; object-position:top; transform:scale(2.1); transform-origin:top; }
+    .record-card h2 { margin:0; font-size:.93rem; }
+    .record-card p { margin:4px 0 0; color:var(--muted); font-size:.75rem; }
+
+    .detail-screen { width:min(100%,760px); margin:0 auto; padding:calc(20px + env(safe-area-inset-top)) 18px 32px; }
+    .back-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .back-btn { width:44px; height:44px; border:1px solid var(--line); border-radius:15px; background:white; color:var(--ink); font-size:1.15rem; }
+    .detail-card { position:relative; min-height:330px; border:3px solid var(--accent); border-radius:30px; overflow:hidden; background:var(--card-bg); box-shadow:var(--shadow); }
+    .detail-image { position:absolute; left:5px; bottom:0; width:48%; height:96%; object-fit:contain; filter:drop-shadow(0 16px 16px rgba(17,39,68,.2)); }
+    .detail-copy { position:absolute; z-index:3; top:32px; right:22px; width:48%; }
+    .detail-copy h1 { margin:0; font-size:1.6rem; letter-spacing:-.05em; }
+    .detail-copy .role { color:var(--muted); font-size:.78rem; font-weight:800; }
+    .detail-copy .summary { margin:14px 0; font-weight:900; }
+    .detail-actions { display:grid; gap:8px; }
+    .primary-btn, .secondary-btn { min-height:45px; border-radius:14px; padding:0 13px; font-weight:900; }
+    .primary-btn { border:0; background:var(--navy); color:white; }
+    .secondary-btn { border:1px solid var(--line); background:rgba(255,255,255,.84); color:var(--ink); }
+    .detail-section { margin-top:24px; }
+    .detail-section h2 { margin:0 2px 11px; font-size:1.06rem; }
+    .metric-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .metric { border:1px solid var(--line); border-radius:19px; padding:15px; background:white; }
+    .metric span { display:block; color:var(--muted); font-size:.72rem; }
+    .metric strong { display:block; margin-top:3px; font-size:1.2rem; }
+    .metric small { color:var(--muted); font-size:.68rem; }
+    .history-list { border:1px solid var(--line); border-radius:20px; overflow:hidden; background:white; }
+    .history-row { display:grid; grid-template-columns:10px 1fr auto; gap:10px; padding:15px; border-bottom:1px solid var(--line); align-items:start; }
+    .history-row:last-child { border-bottom:0; }
+    .history-dot { width:10px; height:10px; border-radius:50%; background:var(--accent); margin-top:5px; }
+    .history-row strong { display:block; font-size:.84rem; }
+    .history-row span, .history-row time { color:var(--muted); font-size:.72rem; }
+
+    .backdrop { position:fixed; inset:0; z-index:30; background:rgba(8,20,36,.5); opacity:0; pointer-events:none; transition:.2s; backdrop-filter:blur(3px); }
+    .backdrop.open { opacity:1; pointer-events:auto; }
+    .sheet { position:fixed; z-index:31; left:0; right:0; bottom:0; max-height:88vh; overflow:auto; padding:12px 20px calc(24px + env(safe-area-inset-bottom)); border-radius:28px 28px 0 0; background:white; transform:translateY(102%); transition:.26s ease; }
+    .sheet.open { transform:translateY(0); }
+    .sheet-grip { width:42px; height:5px; border-radius:99px; background:#d7dee4; margin:0 auto 18px; }
+    .sheet-head { display:flex; align-items:start; justify-content:space-between; gap:12px; }
+    .sheet-head h2 { margin:0; font-size:1.25rem; }
+    .sheet-head p { margin:3px 0 0; color:var(--muted); font-size:.78rem; }
+    .close-btn { width:38px; height:38px; border:0; border-radius:12px; background:var(--canvas); font-size:1.2rem; }
+    .form-label { display:block; margin:18px 0 7px; font-weight:850; font-size:.83rem; }
+    .form-input, .form-select { width:100%; min-height:47px; border:1px solid var(--line); border-radius:14px; padding:11px 13px; background:white; }
+    textarea.form-input { min-height:96px; resize:vertical; }
+    .sheet .primary-btn { width:100%; margin-top:18px; }
+    .invite-code { margin-top:18px; padding:15px; border-radius:16px; background:var(--canvas); display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .invite-code code { font-size:.78rem; overflow:hidden; text-overflow:ellipsis; }
+    .copy-btn { border:0; border-radius:11px; background:var(--navy); color:white; padding:8px 11px; font-size:.75rem; font-weight:850; }
+    .toast { position:fixed; z-index:50; left:50%; bottom:calc(80px + env(safe-area-inset-bottom)); width:min(calc(100% - 32px),420px); transform:translate(-50%,15px); opacity:0; pointer-events:none; background:var(--navy); color:white; border-radius:15px; padding:13px 16px; text-align:center; font-weight:800; transition:.2s; box-shadow:var(--shadow); }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+
+    @media (min-width:720px) {
+      .carousel-track { padding-left:calc((100vw - 380px)/2); padding-right:calc((100vw - 380px)/2); }
+      .character-card, .invite-card { flex-basis:380px; }
+      .records-grid { grid-template-columns:repeat(3,1fr); }
+      .bottom-nav { left:50%; right:auto; width:760px; transform:translateX(-50%); border-left:1px solid var(--line); border-right:1px solid var(--line); }
+      .sheet { left:50%; right:auto; width:520px; transform:translate(-50%,102%); }
+      .sheet.open { transform:translate(-50%,0); }
+    }
+    @media (max-height:720px) {
+      .character-card, .invite-card { height:62dvh; min-height:440px; }
+      .character-image { height:71%; }
+    }
+    @media (prefers-reduced-motion:reduce) { *,*:before,*:after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
   </style>
 </head>
 <body>
   <div class="app">
-    <header class="app-bar">
-      <div class="brand" aria-label="we 우리 가족 건강"><div class="brand-mark">we</div><span class="brand-name">우리 가족</span></div>
-      <div class="bar-actions"><button class="icon-btn" id="installApp" aria-label="앱 설치">⇩</button><button class="icon-btn" aria-label="알림">●</button></div>
-    </header>
+    <div class="top-tools" id="topTools"><div class="brand-mark" aria-label="we">we</div><div class="tools"><button class="tool-btn" id="installApp" aria-label="앱 설치">⇩</button><button class="tool-btn" aria-label="알림">●</button></div></div>
 
     <main>
-      <section class="screen active" id="homeScreen">
-        <div class="section-head"><div><h1>우리 가족</h1><p>카드를 눌러 자세히 확인하세요</p></div><span class="updated">방금 업데이트</span></div>
-        <div class="status-legend" aria-label="건강 상태 색상 안내">
-          <span class="legend-item"><i class="legend-dot"></i>편안해요</span>
-          <span class="legend-item"><i class="legend-dot yellow"></i>확인해요</span>
-          <span class="legend-item"><i class="legend-dot orange"></i>살펴봐요</span>
-          <span class="legend-item"><i class="legend-dot red"></i>도움 필요</span>
-        </div>
-
-        <div class="family-grid" id="familyGrid">
-          <button class="member-card status-green" data-member="minsu" aria-label="김민수, 편안해요, 상세 보기"><div class="card-top"><div class="member-avatar"><img src="assets/health-avatar.png" alt="" /></div><span class="card-arrow">›</span></div><div class="member-name">김민수<span class="member-role">나</span></div><p class="member-summary">오늘 기록된 불편함이 없어요</p><time class="member-time">오전 9:12 확인</time></button>
-          <button class="member-card status-yellow" data-member="mom" aria-label="엄마 박영희, 확인해요, 상세 보기"><div class="card-top"><div class="member-avatar">👩🏻</div><span class="card-arrow">›</span></div><div class="member-name">박영희<span class="member-role">엄마</span></div><p class="member-summary">아침 약 복용을 확인해 주세요</p><time class="member-time">오전 8:10 기록</time></button>
-          <button class="member-card status-orange" data-member="dad" aria-label="아빠 김정호, 살펴봐요, 상세 보기"><div class="card-top"><div class="member-avatar">👨🏻</div><span class="card-arrow">›</span></div><div class="member-name">김정호<span class="member-role">아빠</span></div><p class="member-summary">허리 통증 3/10 · 이틀째</p><time class="member-time">오전 7:42 기록</time></button>
-          <button class="member-card status-red" data-member="jiyeon" aria-label="김지연, 도움 필요, 상세 보기"><div class="card-top"><div class="member-avatar">👩🏻‍🦰</div><span class="card-arrow">›</span></div><div class="member-name">김지연<span class="member-role">동생</span></div><p class="member-summary">두통이 심해 쉬고 있어요</p><time class="member-time">30분 전 기록</time></button>
-          <button class="invite-card" id="openInvite" aria-label="가족 초대하기"><div><div class="invite-plus">＋</div><strong>가족 초대</strong><span>링크로 간단히 연결해요</span></div></button>
-        </div>
-
-        <section class="news" aria-labelledby="newsTitle">
-          <div class="section-head"><div><h2 id="newsTitle">우리 가족 소식</h2><p>최근 기록을 시간순으로 모았어요</p></div></div>
-          <div class="news-list">
-            <button class="news-item" data-member="mom"><span class="news-avatar">👩🏻</span><span class="news-copy"><strong>엄마가 산책을 마쳤어요</strong><span>38분 · 4,280걸음</span></span><time class="news-time">9:12</time></button>
-            <button class="news-item" data-member="dad"><span class="news-avatar">👨🏻</span><span class="news-copy"><strong>아빠가 허리 상태를 남겼어요</strong><span>“어제보다 조금 나아요”</span></span><time class="news-time">7:42</time></button>
-            <button class="news-item" data-member="jiyeon"><span class="news-avatar">👩🏻‍🦰</span><span class="news-copy"><strong>지연이가 두통을 기록했어요</strong><span>휴식 중 · 알림을 보냈어요</span></span><time class="news-time">30분 전</time></button>
+      <section class="screen active carousel-screen" id="homeScreen">
+        <div class="carousel-shell">
+          <div class="carousel-track" id="carouselTrack" aria-label="가족 캐릭터">
+            <article class="character-card theme-mint" data-slide="minsu"><span class="card-code">WE 01</span><span class="card-number">01</span><div class="card-orbit"></div><img class="character-image" src="assets/health-avatar.png" alt="김민수 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김민수</h1><span class="card-role">나 · 39세</span></div><button class="open-detail" data-member="minsu" aria-label="김민수 상세 보기">›</button></div><p class="record-line"><i></i>오늘 기록된 불편함이 없어요</p></div></article>
+            <article class="character-card theme-coral" data-slide="mom"><span class="card-code">WE 02</span><span class="card-number">02</span><div class="card-orbit"></div><img class="character-image" src="assets/mother-avatar.png" alt="박영희 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">박영희</h1><span class="card-role">엄마 · 68세</span></div><button class="open-detail" data-member="mom" aria-label="박영희 상세 보기">›</button></div><p class="record-line"><i></i>아침 약 복용을 확인해 주세요</p></div></article>
+            <article class="character-card theme-gold" data-slide="dad"><span class="card-code">WE 03</span><span class="card-number">03</span><div class="card-orbit"></div><img class="character-image" src="assets/father-avatar.png" alt="김정호 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김정호</h1><span class="card-role">아빠 · 71세</span></div><button class="open-detail" data-member="dad" aria-label="김정호 상세 보기">›</button></div><p class="record-line"><i></i>허리 통증 3/10 · 이틀째</p></div></article>
+            <article class="character-card theme-violet" data-slide="jiyeon"><span class="card-code">WE 04</span><span class="card-number">04</span><div class="card-orbit"></div><img class="character-image" src="assets/sister-avatar.png" alt="김지연 캐릭터" /><div class="card-info"><div class="card-name-row"><div><h1 class="card-name">김지연</h1><span class="card-role">동생 · 35세</span></div><button class="open-detail" data-member="jiyeon" aria-label="김지연 상세 보기">›</button></div><p class="record-line"><i></i>두통이 심해 쉬고 있어요</p></div></article>
+            <button class="invite-card" id="openInvite" data-slide="invite" aria-label="가족 초대하기"><div class="invite-content"><div class="invite-plus">＋</div><strong>새 가족 초대</strong><span>링크로 가족을 연결해요</span></div></button>
           </div>
-        </section>
-      </section>
-
-      <section class="screen" id="recordsScreen">
-        <div class="section-head"><div><h1>건강 기록</h1><p>가족의 검진과 일상 기록을 모아봐요</p></div><button class="icon-btn" id="addRecord" aria-label="기록 추가">＋</button></div>
-        <div class="records-summary">
-          <article class="record-card"><h3>2026 건강검진</h3><p>혈압과 혈당은 안정적이에요</p><div class="record-person"><i></i>김민수 · 8월 21일</div></article>
-          <article class="record-card"><h3>혈압 기록</h3><p>최근 7일 평균 128 / 82</p><div class="record-person"><i class="yellow"></i>박영희 · 오늘</div></article>
-          <article class="record-card"><h3>허리 통증</h3><p>3/10 · 이틀 연속 기록</p><div class="record-person"><i class="orange"></i>김정호 · 오늘</div></article>
-          <article class="record-card"><h3>복약 기록</h3><p>이번 주 6회 완료</p><div class="record-person"><i></i>박영희 · 이번 주</div></article>
+          <div class="carousel-controls"><button class="round-arrow" id="prevSlide" aria-label="이전 가족">←</button><div class="dots" id="carouselDots" aria-label="캐릭터 위치"></div><button class="round-arrow" id="nextSlide" aria-label="다음 가족">→</button></div>
         </div>
       </section>
 
-      <section class="screen" id="detailScreen" aria-live="polite">
-        <div class="back-row"><button class="back-btn" id="backHome" aria-label="우리 가족으로 돌아가기">←</button><strong>가족 상세</strong></div>
-        <article class="detail-hero status-green" id="detailHero">
-          <div class="detail-avatar" id="detailAvatar"></div>
-          <div><h1 id="detailName"></h1><span class="detail-role" id="detailRole"></span><p class="detail-summary" id="detailSummary"></p></div>
-          <div class="detail-actions"><button class="primary-btn" id="openHealthLog">기록 남기기</button><button class="secondary-btn" id="sendCare">안부 보내기</button></div>
-        </article>
-        <section class="detail-section"><h2>오늘의 건강</h2><div class="metric-grid" id="metricGrid"></div></section>
-        <section class="detail-section"><h2>최근 기록</h2><div class="history-list" id="historyList"></div></section>
-      </section>
+      <section class="screen content-screen" id="recordsScreen"><h1>기록</h1><div class="records-grid">
+        <article class="record-card"><div class="mini-person"><img src="assets/health-avatar.png" alt="" /></div><h2>2026 건강검진</h2><p>김민수 · 혈압과 혈당 정상</p></article>
+        <article class="record-card"><div class="mini-person"><img src="assets/mother-avatar.png" alt="" /></div><h2>아침 혈압</h2><p>박영희 · 128 / 82</p></article>
+        <article class="record-card"><div class="mini-person"><img src="assets/father-avatar.png" alt="" /></div><h2>허리 통증</h2><p>김정호 · 3/10 · 이틀째</p></article>
+        <article class="record-card"><div class="mini-person"><img src="assets/sister-avatar.png" alt="" /></div><h2>두통 기록</h2><p>김지연 · 7/10 · 30분 전</p></article>
+      </div></section>
+
+      <section class="screen detail-screen" id="detailScreen"><div class="back-row"><button class="back-btn" id="backHome" aria-label="가족 카드로 돌아가기">←</button></div><article class="detail-card theme-mint" id="detailCard"><img class="detail-image" id="detailImage" alt="" /><div class="detail-copy"><h1 id="detailName"></h1><span class="role" id="detailRole"></span><p class="summary" id="detailSummary"></p><div class="detail-actions"><button class="primary-btn" id="openHealthLog">기록 남기기</button><button class="secondary-btn" id="sendCare">안부 보내기</button></div></div></article><section class="detail-section"><h2>오늘의 건강</h2><div class="metric-grid" id="metricGrid"></div></section><section class="detail-section"><h2>최근 기록</h2><div class="history-list" id="historyList"></div></section></section>
     </main>
   </div>
 
-  <nav class="bottom-nav" id="bottomNav" aria-label="주요 메뉴">
-    <button class="nav-btn active" data-screen="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20v-9l8-7 8 7v9h-5v-6H9v6Z"/></svg>홈</button>
-    <button class="nav-btn" data-screen="records"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>기록</button>
-  </nav>
+  <nav class="bottom-nav" id="bottomNav" aria-label="주요 메뉴"><button class="nav-btn active" data-screen="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20v-9l8-7 8 7v9h-5v-6H9v6Z"/></svg>홈</button><button class="nav-btn" data-screen="records"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>기록</button></nav>
 
   <div class="backdrop" id="backdrop"></div>
-  <aside class="sheet" id="inviteSheet" role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
-    <div class="sheet-grip"></div><div class="sheet-head"><div><h2 id="inviteTitle">가족 초대</h2><p>초대받은 가족은 본인 정보의 공유 범위를 정할 수 있어요.</p></div><button class="close-btn" data-close aria-label="닫기">×</button></div>
-    <label class="form-label" for="familyRole">가족 관계</label><select class="form-select" id="familyRole"><option>부모님</option><option>배우자</option><option>자녀</option><option>형제·자매</option><option>기타 가족</option></select>
-    <div class="invite-code"><code>we.family/join/KIM-2409</code><button class="copy-btn" id="copyInvite">링크 복사</button></div>
-    <button class="primary-btn" id="shareInvite">초대 링크 보내기</button>
-  </aside>
-
-  <aside class="sheet" id="healthSheet" role="dialog" aria-modal="true" aria-labelledby="healthTitle">
-    <div class="sheet-grip"></div><div class="sheet-head"><div><h2 id="healthTitle">건강 기록 남기기</h2><p id="healthFor"></p></div><button class="close-btn" data-close aria-label="닫기">×</button></div>
-    <label class="form-label" for="healthStatus">상태</label><select class="form-select" id="healthStatus"><option value="green">편안해요</option><option value="yellow">확인할 게 있어요</option><option value="orange">계속 살펴봐요</option><option value="red">가족의 도움이 필요해요</option></select>
-    <label class="form-label" for="healthNote">메모</label><textarea class="form-input" id="healthNote" placeholder="예: 아침부터 오른쪽 어깨가 뻐근해요"></textarea>
-    <button class="primary-btn" id="saveHealth">가족 기록에 남기기</button>
-  </aside>
+  <aside class="sheet" id="inviteSheet" role="dialog" aria-modal="true" aria-labelledby="inviteTitle"><div class="sheet-grip"></div><div class="sheet-head"><div><h2 id="inviteTitle">가족 초대</h2><p>초대받은 가족은 공유 범위를 직접 정할 수 있어요.</p></div><button class="close-btn" data-close aria-label="닫기">×</button></div><label class="form-label" for="familyRole">가족 관계</label><select class="form-select" id="familyRole"><option>부모님</option><option>배우자</option><option>자녀</option><option>형제·자매</option><option>기타 가족</option></select><div class="invite-code"><code>we.family/join/KIM-2409</code><button class="copy-btn" id="copyInvite">복사</button></div><button class="primary-btn" id="shareInvite">초대 링크 보내기</button></aside>
+  <aside class="sheet" id="healthSheet" role="dialog" aria-modal="true" aria-labelledby="healthTitle"><div class="sheet-grip"></div><div class="sheet-head"><div><h2 id="healthTitle">건강 기록</h2><p id="healthFor"></p></div><button class="close-btn" data-close aria-label="닫기">×</button></div><label class="form-label" for="healthStatus">상태</label><select class="form-select" id="healthStatus"><option value="green">편안해요</option><option value="yellow">확인할 게 있어요</option><option value="orange">계속 살펴봐요</option><option value="red">가족의 도움이 필요해요</option></select><label class="form-label" for="healthNote">메모</label><textarea class="form-input" id="healthNote" placeholder="예: 아침부터 오른쪽 어깨가 뻐근해요"></textarea><button class="primary-btn" id="saveHealth">기록 남기기</button></aside>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const members = {
-      minsu: { name:'김민수', role:'나 · 39세', status:'green', avatar:'image', summary:'오늘 기록된 불편함이 없어요', metrics:[['컨디션','좋음','오늘'],['걸음','6,420','목표 8,000'],['혈압','118 / 76','8월 검진'],['수면','7시간 12분','어젯밤']], history:[['건강검진 결과','혈압·혈당 정상 범위','8월 21일'],['기분 기록','오늘 기분 좋아요','오늘 9:12']] },
-      mom: { name:'박영희', role:'엄마 · 68세', status:'yellow', avatar:'👩🏻', summary:'아침 약 복용을 확인해 주세요', metrics:[['혈압','128 / 82','오늘 8:05'],['걸음','4,280','38분 산책'],['복약','확인 필요','아침 약'],['기분','좋음','산책 후']], history:[['아침 산책','4,280걸음 · 38분','오늘 9:12'],['혈압 기록','128 / 82','오늘 8:05'],['복약 기록','저녁 약 복용 완료','어제 20:10']] },
-      dad: { name:'김정호', role:'아빠 · 71세', status:'orange', avatar:'👨🏻', summary:'허리 통증 3/10 · 이틀째', metrics:[['통증','3 / 10','허리'],['지속','2일','어제 시작'],['혈압','134 / 86','오늘 7:30'],['기분','보통','아침']], history:[['허리 상태','어제보다 조금 나아요','오늘 7:42'],['온찜질','20분 완료','오늘 7:10'],['허리 통증','4/10으로 기록','어제 8:20']] },
-      jiyeon: { name:'김지연', role:'동생 · 35세', status:'red', avatar:'👩🏻‍🦰', summary:'두통이 심해 쉬고 있어요', metrics:[['통증','7 / 10','두통'],['체온','37.8°','30분 전'],['복약','진통제','복용 완료'],['수분','2잔','오늘']], history:[['두통 기록','빛을 보면 더 아파요','30분 전'],['진통제 복용','1정 복용 완료','25분 전'],['가족 알림','민수에게 알림 전송','20분 전']] }
+    const members={
+      minsu:{name:'김민수',role:'나 · 39세',theme:'theme-mint',image:'assets/health-avatar.png',summary:'오늘 기록된 불편함이 없어요',metrics:[['컨디션','좋음','오늘'],['걸음','6,420','목표 8,000'],['혈압','118 / 76','8월 검진'],['수면','7시간 12분','어젯밤']],history:[['건강검진 결과','혈압·혈당 정상 범위','8월 21일'],['기분 기록','오늘 기분 좋아요','오늘 9:12']]},
+      mom:{name:'박영희',role:'엄마 · 68세',theme:'theme-coral',image:'assets/mother-avatar.png',summary:'아침 약 복용을 확인해 주세요',metrics:[['혈압','128 / 82','오늘 8:05'],['걸음','4,280','38분 산책'],['복약','확인 필요','아침 약'],['기분','좋음','산책 후']],history:[['아침 산책','4,280걸음 · 38분','오늘 9:12'],['혈압 기록','128 / 82','오늘 8:05'],['복약 기록','저녁 약 복용 완료','어제 20:10']]},
+      dad:{name:'김정호',role:'아빠 · 71세',theme:'theme-gold',image:'assets/father-avatar.png',summary:'허리 통증 3/10 · 이틀째',metrics:[['통증','3 / 10','허리'],['지속','2일','어제 시작'],['혈압','134 / 86','오늘 7:30'],['기분','보통','아침']],history:[['허리 상태','어제보다 조금 나아요','오늘 7:42'],['온찜질','20분 완료','오늘 7:10'],['허리 통증','4/10으로 기록','어제 8:20']]},
+      jiyeon:{name:'김지연',role:'동생 · 35세',theme:'theme-violet',image:'assets/sister-avatar.png',summary:'두통이 심해 쉬고 있어요',metrics:[['통증','7 / 10','두통'],['체온','37.8°','30분 전'],['복약','진통제','복용 완료'],['수분','2잔','오늘']],history:[['두통 기록','빛을 보면 더 아파요','30분 전'],['진통제 복용','1정 복용 완료','25분 전'],['가족 알림','민수에게 알림 전송','20분 전']]}
     };
-    let currentMember = 'minsu';
-    let installPrompt = null;
-    const screens = { home: document.getElementById('homeScreen'), records: document.getElementById('recordsScreen'), detail: document.getElementById('detailScreen') };
-    const bottomNav = document.getElementById('bottomNav');
-    const backdrop = document.getElementById('backdrop');
-
-    function showScreen(name) {
-      Object.entries(screens).forEach(([key, el]) => el.classList.toggle('active', key === name));
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.screen === name));
-      bottomNav.style.display = name === 'detail' ? 'none' : 'grid';
-      document.body.style.paddingBottom = name === 'detail' ? '0' : '';
-      window.scrollTo({top:0, behavior:'smooth'});
-    }
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.screen)));
-
-    function avatarMarkup(member, forDetail = false) {
-      if (member.avatar === 'image') return '<img src="assets/health-avatar.png" alt="김민수 건강 캐릭터" />';
-      return member.avatar;
-    }
-    function openMember(id) {
-      const member = members[id];
-      if (!member) return;
-      currentMember = id;
-      const hero = document.getElementById('detailHero');
-      hero.className = `detail-hero status-${member.status}`;
-      document.getElementById('detailAvatar').innerHTML = avatarMarkup(member, true);
-      document.getElementById('detailName').textContent = member.name;
-      document.getElementById('detailRole').textContent = member.role;
-      document.getElementById('detailSummary').textContent = member.summary;
-      document.getElementById('metricGrid').innerHTML = member.metrics.map(([label,value,note]) => `<article class="metric"><span>${label}</span><strong>${value}</strong><small>${note}</small></article>`).join('');
-      document.getElementById('historyList').innerHTML = member.history.map(([title,note,time], index) => `<div class="history-row"><i class="history-dot" style="opacity:${1-index*.2}"></i><div><strong>${title}</strong><span>${note}</span></div><time>${time}</time></div>`).join('');
-      showScreen('detail');
-    }
-    document.querySelectorAll('[data-member]').forEach(el => el.addEventListener('click', () => openMember(el.dataset.member)));
-    document.getElementById('backHome').addEventListener('click', () => showScreen('home'));
-
-    function openSheet(id) { document.getElementById(id).classList.add('open'); backdrop.classList.add('open'); document.body.style.overflow='hidden'; }
-    function closeSheets() { document.querySelectorAll('.sheet').forEach(sheet => sheet.classList.remove('open')); backdrop.classList.remove('open'); document.body.style.overflow=''; }
-    document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', closeSheets));
-    backdrop.addEventListener('click', closeSheets);
-    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeSheets(); });
-    document.getElementById('openInvite').addEventListener('click', () => openSheet('inviteSheet'));
-    document.getElementById('openHealthLog').addEventListener('click', () => { document.getElementById('healthFor').textContent = members[currentMember].name + '님의 상태를 가족 기록에 남겨요.'; openSheet('healthSheet'); });
-    document.getElementById('addRecord').addEventListener('click', () => { currentMember='minsu'; document.getElementById('healthFor').textContent='김민수님의 상태를 가족 기록에 남겨요.'; openSheet('healthSheet'); });
-
-    function toast(message) { const el=document.getElementById('toast'); el.textContent=message; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
-    document.getElementById('copyInvite').addEventListener('click', async () => { try { await navigator.clipboard.writeText('https://we.family/join/KIM-2409'); toast('초대 링크를 복사했어요.'); } catch { toast('초대 링크가 준비됐어요.'); } });
-    document.getElementById('shareInvite').addEventListener('click', () => { closeSheets(); toast('가족에게 보낼 초대 링크를 만들었어요.'); });
-    document.getElementById('saveHealth').addEventListener('click', () => { closeSheets(); toast(members[currentMember].name + '님의 건강 기록을 남겼어요.'); });
-    document.getElementById('sendCare').addEventListener('click', () => toast(members[currentMember].name + '님에게 안부를 보냈어요.'));
-
-    window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt=event; });
-    document.getElementById('installApp').addEventListener('click', async () => { if (window.matchMedia('(display-mode: standalone)').matches) return toast('이미 앱으로 설치되어 있어요.'); if (installPrompt) { installPrompt.prompt(); await installPrompt.userChoice; installPrompt=null; } else toast('아이폰은 공유 버튼에서 “홈 화면에 추가”를 선택해 주세요.'); });
-
-    const params = new URLSearchParams(location.search);
-    if (params.get('member') && members[params.get('member')]) openMember(params.get('member'));
-    if (params.get('view') === 'records') showScreen('records');
-    if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
-
-    const modelContext = document.modelContext;
-    if (modelContext?.registerTool) {
-      const register = tool => Promise.resolve(modelContext.registerTool(tool)).catch(()=>{});
-      register({ name:'open_family_member', title:'가족 상세 열기', description:'가족 구성원의 건강 상세 화면을 엽니다.', inputSchema:{type:'object',properties:{memberId:{type:'string',enum:Object.keys(members)}},required:['memberId'],additionalProperties:false}, annotations:{readOnlyHint:true,untrustedContentHint:false}, execute(input){ if(!members[input?.memberId]) throw new Error('가족 구성원을 찾을 수 없습니다.'); openMember(input.memberId); return {memberId:input.memberId,name:members[input.memberId].name,status:members[input.memberId].status}; } });
-      register({ name:'open_health_records', title:'건강 기록 열기', description:'가족 전체 건강 기록 화면으로 이동합니다.', inputSchema:{type:'object',properties:{},additionalProperties:false}, annotations:{readOnlyHint:true,untrustedContentHint:false}, execute(){ showScreen('records'); return {view:'records'}; } });
-      register({ name:'start_family_invite', title:'가족 초대 시작', description:'가족 관계를 선택하고 초대 링크를 만들 수 있는 창을 엽니다.', inputSchema:{type:'object',properties:{},additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute(){ showScreen('home'); openSheet('inviteSheet'); return {status:'draft',inviteCreated:false}; } });
-    }
+    let currentMember='minsu',currentSlide=0,installPrompt=null,scrollTimer;
+    const screens={home:document.getElementById('homeScreen'),records:document.getElementById('recordsScreen'),detail:document.getElementById('detailScreen')};
+    const bottomNav=document.getElementById('bottomNav'),topTools=document.getElementById('topTools'),track=document.getElementById('carouselTrack'),slides=[...track.children],dotsHost=document.getElementById('carouselDots'),backdrop=document.getElementById('backdrop');
+    slides.forEach((_,index)=>{const dot=document.createElement('button');dot.className='dot'+(index===0?' active':'');dot.setAttribute('aria-label',`${index+1}번째 카드`);dot.addEventListener('click',()=>goSlide(index));dotsHost.appendChild(dot);});
+    const dots=[...dotsHost.children];
+    function updateDots(index){currentSlide=index;dots.forEach((dot,i)=>dot.classList.toggle('active',i===index));}
+    function goSlide(index){const next=(index+slides.length)%slides.length;slides[next].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});updateDots(next);}
+    document.getElementById('prevSlide').addEventListener('click',()=>goSlide(currentSlide-1));
+    document.getElementById('nextSlide').addEventListener('click',()=>goSlide(currentSlide+1));
+    track.addEventListener('scroll',()=>{clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>{const center=track.scrollLeft+track.clientWidth/2;let best=0,distance=Infinity;slides.forEach((slide,i)=>{const d=Math.abs(slide.offsetLeft+slide.offsetWidth/2-center);if(d<distance){distance=d;best=i;}});updateDots(best);},80);},{passive:true});
+    function showScreen(name){Object.entries(screens).forEach(([key,el])=>el.classList.toggle('active',key===name));document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.screen===name));const detail=name==='detail';bottomNav.style.display=detail?'none':'grid';topTools.style.display=detail?'none':'flex';document.body.style.paddingBottom=detail?'0':'';window.scrollTo({top:0,behavior:'smooth'});}
+    document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>showScreen(btn.dataset.screen)));
+    function openMember(id){const member=members[id];if(!member)return;currentMember=id;const card=document.getElementById('detailCard');card.className=`detail-card ${member.theme}`;const img=document.getElementById('detailImage');img.src=member.image;img.alt=member.name+' 캐릭터';document.getElementById('detailName').textContent=member.name;document.getElementById('detailRole').textContent=member.role;document.getElementById('detailSummary').textContent=member.summary;document.getElementById('metricGrid').innerHTML=member.metrics.map(([label,value,note])=>`<article class="metric"><span>${label}</span><strong>${value}</strong><small>${note}</small></article>`).join('');document.getElementById('historyList').innerHTML=member.history.map(([title,note,time])=>`<div class="history-row"><i class="history-dot"></i><div><strong>${title}</strong><span>${note}</span></div><time>${time}</time></div>`).join('');showScreen('detail');}
+    document.querySelectorAll('.open-detail').forEach(btn=>btn.addEventListener('click',()=>openMember(btn.dataset.member)));
+    document.getElementById('backHome').addEventListener('click',()=>showScreen('home'));
+    function openSheet(id){document.getElementById(id).classList.add('open');backdrop.classList.add('open');document.body.style.overflow='hidden';}
+    function closeSheets(){document.querySelectorAll('.sheet').forEach(sheet=>sheet.classList.remove('open'));backdrop.classList.remove('open');document.body.style.overflow='';}
+    document.getElementById('openInvite').addEventListener('click',()=>openSheet('inviteSheet'));document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',closeSheets));backdrop.addEventListener('click',closeSheets);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheets();if(e.key==='ArrowLeft'&&screens.home.classList.contains('active'))goSlide(currentSlide-1);if(e.key==='ArrowRight'&&screens.home.classList.contains('active'))goSlide(currentSlide+1);});
+    function toast(message){const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400);}
+    document.getElementById('openHealthLog').addEventListener('click',()=>{document.getElementById('healthFor').textContent=members[currentMember].name+'님의 상태를 남겨요.';openSheet('healthSheet');});document.getElementById('saveHealth').addEventListener('click',()=>{closeSheets();toast(members[currentMember].name+'님의 기록을 남겼어요.');});document.getElementById('sendCare').addEventListener('click',()=>toast(members[currentMember].name+'님에게 안부를 보냈어요.'));document.getElementById('copyInvite').addEventListener('click',async()=>{try{await navigator.clipboard.writeText('https://we.family/join/KIM-2409');}catch{}toast('초대 링크를 복사했어요.');});document.getElementById('shareInvite').addEventListener('click',()=>{closeSheets();toast('초대 링크를 준비했어요.');});
+    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});document.getElementById('installApp').addEventListener('click',async()=>{if(window.matchMedia('(display-mode: standalone)').matches)return toast('이미 앱으로 설치되어 있어요.');if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;}else toast('아이폰은 공유 버튼에서 “홈 화면에 추가”를 선택해 주세요.');});
+    const params=new URLSearchParams(location.search);if(params.get('member')&&members[params.get('member')])openMember(params.get('member'));if(params.get('view')==='records')showScreen('records');if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+    const modelContext=document.modelContext;if(modelContext?.registerTool){const register=tool=>Promise.resolve(modelContext.registerTool(tool)).catch(()=>{});register({name:'open_family_member',title:'가족 상세 열기',description:'가족 구성원의 건강 상세 화면을 엽니다.',inputSchema:{type:'object',properties:{memberId:{type:'string',enum:Object.keys(members)}},required:['memberId'],additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute(input){if(!members[input?.memberId])throw new Error('가족 구성원을 찾을 수 없습니다.');openMember(input.memberId);return{memberId:input.memberId,name:members[input.memberId].name};}});register({name:'open_health_records',title:'건강 기록 열기',description:'가족 건강 기록 화면으로 이동합니다.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute(){showScreen('records');return{view:'records'};}});register({name:'start_family_invite',title:'가족 초대 시작',description:'가족 초대 링크를 만드는 창을 엽니다.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(){showScreen('home');goSlide(slides.length-1);openSheet('inviteSheet');return{status:'draft'};}});}
   </script>
 </body>
 </html>
