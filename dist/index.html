@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1d35" />
+  <meta name="description" content="가족의 오늘 건강과 검진 기록을 편안하게 나누는 앱, 온기" />
+  <title>온기 · 가족 건강 기록</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230b1d35'/%3E%3Cpath d='M32 49S14 39 14 25c0-10 12-14 18-5 6-9 18-5 18 5 0 14-18 24-18 24Z' fill='%2367e8c0'/%3E%3Cpath d='M22 31h7l3-7 4 14 3-7h5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --navy: #0b1d35;
+      --navy-2: #152d4d;
+      --ink: #17243a;
+      --muted: #68778c;
+      --line: #e1e8ee;
+      --surface: #ffffff;
+      --canvas: #f2f7f8;
+      --mint: #3dd5ad;
+      --mint-soft: #dff8f0;
+      --blue: #5398ff;
+      --blue-soft: #eaf2ff;
+      --amber: #f2a64a;
+      --amber-soft: #fff2dc;
+      --rose: #ec6f7b;
+      --rose-soft: #ffebed;
+      --shadow: 0 22px 60px rgba(11, 29, 53, .12);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 248px 1fr; }
+    .sidebar {
+      position: sticky; top: 0; height: 100vh; padding: 30px 22px;
+      background: var(--navy); color: white; display: flex; flex-direction: column;
+    }
+    .brand { display: flex; gap: 11px; align-items: center; padding: 0 10px 30px; }
+    .brand-mark { width: 38px; height: 38px; border-radius: 13px; background: var(--mint); color: var(--navy); display: grid; place-items: center; font-weight: 900; }
+    .brand-name { font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em; }
+    .brand small { display: block; opacity: .58; font-size: .76rem; font-weight: 500; }
+    .nav-list { display: grid; gap: 8px; }
+    .nav-item {
+      width: 100%; border: 0; background: transparent; color: rgba(255,255,255,.64); border-radius: 14px;
+      padding: 13px 14px; display: flex; align-items: center; gap: 12px; text-align: left; font-weight: 700;
+    }
+    .nav-item svg { width: 21px; height: 21px; }
+    .nav-item.active { color: white; background: rgba(255,255,255,.1); }
+    .nav-item.active svg { color: var(--mint); }
+    .privacy {
+      margin-top: auto; padding: 18px; border-radius: 18px; background: rgba(255,255,255,.07); color: rgba(255,255,255,.72); font-size: .82rem;
+    }
+    .privacy strong { display: flex; align-items: center; gap: 7px; color: white; margin-bottom: 5px; font-size: .88rem; }
+    main { min-width: 0; }
+    .topbar { height: 82px; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(22px, 4vw, 58px); }
+    .topbar h1 { margin: 0; font-size: clamp(1.3rem, 2vw, 1.7rem); letter-spacing: -.04em; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .icon-btn { width: 44px; height: 44px; border: 1px solid var(--line); background: white; border-radius: 14px; display: grid; place-items: center; color: var(--ink); }
+    .profile-chip { display: flex; align-items: center; gap: 9px; background: white; padding: 6px 11px 6px 6px; border-radius: 999px; border: 1px solid var(--line); font-weight: 700; }
+    .mini-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--mint-soft); display: grid; place-items: center; font-size: 1.15rem; }
+
+    .page { display: none; padding: 0 clamp(22px, 4vw, 58px) 46px; max-width: 1480px; margin: 0 auto; }
+    .page.active { display: block; animation: pageIn .28s ease-out; }
+    @keyframes pageIn { from { opacity: 0; transform: translateY(7px); } }
+    .dashboard { display: grid; grid-template-columns: minmax(390px, 1.25fr) minmax(320px, .85fr); gap: 22px; }
+    .card { background: var(--surface); border: 1px solid rgba(21,45,77,.07); border-radius: var(--radius-lg); box-shadow: 0 8px 28px rgba(11,29,53,.045); }
+    .health-card { min-height: 640px; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; position: relative; }
+    .health-header { display: flex; justify-content: space-between; padding: 28px 30px 5px; position: relative; z-index: 2; }
+    .eyebrow { color: var(--muted); font-size: .84rem; font-weight: 700; margin-bottom: 5px; }
+    .health-header h2 { margin: 0; font-size: clamp(1.4rem, 2.4vw, 2rem); letter-spacing: -.05em; }
+    .status-pill { align-self: start; border-radius: 999px; padding: 8px 12px; background: var(--mint-soft); color: #08775b; font-size: .82rem; font-weight: 800; }
+    .avatar-stage { position: relative; min-height: 430px; overflow: hidden; display: grid; place-items: center; background: radial-gradient(circle at 50% 48%, #edfffa 0, #f7fbfb 43%, white 71%); }
+    .avatar-stage:before { content: ""; position: absolute; width: 330px; height: 330px; border: 1px dashed #cfe5e2; border-radius: 50%; }
+    .avatar-img { height: 430px; max-width: 82%; object-fit: contain; position: relative; z-index: 1; filter: drop-shadow(0 20px 20px rgba(19,51,67,.14)); }
+    .hotspot { position: absolute; z-index: 3; width: 28px; height: 28px; border: 5px solid white; border-radius: 50%; background: var(--mint); box-shadow: 0 5px 15px rgba(11,29,53,.2); animation: pulse 2s infinite; }
+    .hotspot:hover { transform: scale(1.12); }
+    .hotspot.head { top: 18%; left: 48%; }
+    .hotspot.shoulder { top: 36%; left: 39%; background: var(--amber); }
+    .hotspot.stomach { top: 52%; left: 51%; }
+    .hotspot.knee { top: 72%; left: 44%; background: var(--blue); }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 9px rgba(61,213,173,.14), 0 5px 15px rgba(11,29,53,.2); } }
+    .health-bottom { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 28px 25px; border-top: 1px solid var(--line); }
+    .health-bottom p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .primary-btn { border: 0; color: white; background: var(--navy); padding: 13px 18px; border-radius: 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; box-shadow: 0 8px 18px rgba(11,29,53,.16); }
+    .primary-btn:hover { background: var(--navy-2); transform: translateY(-1px); }
+    .side-stack { display: grid; gap: 22px; align-content: start; }
+    .family-card { padding: 26px; }
+    .card-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .card-title h3 { margin: 0; font-size: 1.08rem; letter-spacing: -.025em; }
+    .text-btn { border: 0; background: transparent; color: var(--blue); font-weight: 800; font-size: .84rem; }
+    .family-row { display: flex; gap: 11px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+    .person { min-width: 78px; text-align: center; }
+    .person-face { width: 60px; height: 60px; margin: 0 auto 8px; border-radius: 21px; background: var(--blue-soft); display: grid; place-items: center; font-size: 1.7rem; position: relative; }
+    .person:nth-child(2) .person-face { background: var(--amber-soft); }
+    .person:nth-child(3) .person-face { background: var(--rose-soft); }
+    .person:nth-child(4) .person-face { background: var(--mint-soft); }
+    .person-face .state { position: absolute; width: 13px; height: 13px; border: 3px solid white; border-radius: 50%; background: var(--mint); right: -2px; bottom: -2px; }
+    .person-face .state.care { background: var(--amber); }
+    .person-name { font-size: .82rem; font-weight: 800; }
+    .person-state { color: var(--muted); font-size: .72rem; }
+    .today-card { padding: 26px; }
+    .timeline { display: grid; gap: 17px; }
+    .timeline-item { display: grid; grid-template-columns: 42px 1fr auto; gap: 12px; align-items: start; }
+    .event-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 14px; background: var(--blue-soft); color: var(--blue); }
+    .event-icon.mint { background: var(--mint-soft); color: #138b6c; }
+    .event-icon.amber { background: var(--amber-soft); color: #b66a0e; }
+    .event-copy strong { display: block; font-size: .91rem; }
+    .event-copy span, .time { color: var(--muted); font-size: .78rem; }
+    .quick-log { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, white, #f2fffb); }
+    .quick-log strong { display: block; }
+    .quick-log span { color: var(--muted); font-size: .8rem; }
+    .mood-row { display: flex; gap: 7px; }
+    .mood { width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 13px; background: white; font-size: 1.15rem; }
+    .mood.selected { border-color: var(--mint); background: var(--mint-soft); transform: translateY(-2px); }
+
+    .section-heading { display: flex; justify-content: space-between; align-items: end; margin: 5px 0 22px; }
+    .section-heading h2 { margin: 0; font-size: clamp(1.45rem, 2.4vw, 2.1rem); letter-spacing: -.05em; }
+    .section-heading p { margin: 4px 0 0; color: var(--muted); }
+    .feed-layout { display: grid; grid-template-columns: minmax(0, 700px) 300px; gap: 22px; align-items: start; }
+    .composer { padding: 22px; display: flex; gap: 13px; align-items: center; margin-bottom: 18px; }
+    .composer button.fake-input { flex: 1; border: 1px solid var(--line); background: var(--canvas); color: var(--muted); border-radius: 15px; padding: 13px 16px; text-align: left; }
+    .post { padding: 24px; margin-bottom: 18px; }
+    .post-head { display: flex; align-items: center; gap: 11px; }
+    .post-head .meta { flex: 1; }
+    .post-head strong { display: block; }
+    .post-head span { color: var(--muted); font-size: .78rem; }
+    .tag { border-radius: 999px; padding: 6px 10px; font-size: .75rem; font-weight: 800; background: var(--mint-soft); color: #08775b; }
+    .tag.amber { background: var(--amber-soft); color: #9a5706; }
+    .post-copy { margin: 16px 0; color: #33435a; }
+    .measure-grid { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--canvas); border-radius: 18px; overflow: hidden; }
+    .measure { padding: 17px; border-right: 1px solid var(--line); }
+    .measure:last-child { border: 0; }
+    .measure span { display: block; color: var(--muted); font-size: .76rem; }
+    .measure strong { font-size: 1.2rem; }
+    .post-actions { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 14px; display: flex; gap: 18px; }
+    .post-actions button { border: 0; background: transparent; color: var(--muted); font-weight: 700; }
+    .post-actions button.liked { color: var(--rose); }
+    .feed-aside { padding: 24px; position: sticky; top: 100px; }
+    .check-list { display: grid; gap: 13px; margin-top: 15px; }
+    .check { display: flex; gap: 10px; align-items: center; font-size: .88rem; }
+    .check i { width: 22px; height: 22px; border-radius: 50%; background: var(--mint-soft); color: #08775b; display: grid; place-items: center; font-style: normal; font-size: .7rem; }
+
+    .records-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .score-card { padding: 28px; grid-column: span 2; display: grid; grid-template-columns: 220px 1fr; gap: 30px; align-items: center; }
+    .score-ring { width: 170px; height: 170px; border-radius: 50%; background: conic-gradient(var(--mint) 0 84%, #e8f0f1 84%); display: grid; place-items: center; position: relative; margin: auto; }
+    .score-ring:after { content: ""; position: absolute; inset: 15px; background: white; border-radius: 50%; }
+    .score-ring div { position: relative; z-index: 1; text-align: center; }
+    .score-ring strong { display: block; font-size: 2.3rem; line-height: 1; }
+    .score-ring span { color: var(--muted); font-size: .76rem; }
+    .score-summary h3 { margin: 0 0 8px; font-size: 1.35rem; }
+    .score-summary p { color: var(--muted); margin: 0 0 18px; }
+    .bar-row { display: grid; grid-template-columns: 90px 1fr 55px; align-items: center; gap: 10px; margin-top: 12px; font-size: .82rem; }
+    .bar { height: 8px; background: #edf2f3; border-radius: 99px; overflow: hidden; }
+    .bar i { display: block; height: 100%; border-radius: 99px; background: var(--mint); }
+    .record-card { padding: 25px; }
+    .record-list { display: grid; gap: 1px; background: var(--line); border-radius: 16px; overflow: hidden; }
+    .record-row { background: white; padding: 15px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .record-row span { color: var(--muted); font-size: .8rem; display: block; }
+    .record-row b { font-size: .9rem; }
+    .value { font-weight: 900; }
+    .value.good { color: #0c8a68; }
+    .value.watch { color: #c97816; }
+    .upload-zone { border: 1.5px dashed #b9c9d3; border-radius: 18px; padding: 32px 20px; text-align: center; background: #f9fbfc; }
+    .upload-zone .big-icon { width: 50px; height: 50px; border-radius: 17px; background: var(--blue-soft); color: var(--blue); display: grid; place-items: center; margin: auto auto 10px; font-size: 1.4rem; }
+    .upload-zone strong { display: block; }
+    .upload-zone span { color: var(--muted); font-size: .8rem; }
+
+    .family-hero { padding: 28px; background: linear-gradient(125deg, var(--navy), #193e63); color: white; display: flex; justify-content: space-between; align-items: center; overflow: hidden; }
+    .family-hero h2 { margin: 0 0 8px; font-size: 1.75rem; }
+    .family-hero p { margin: 0; color: rgba(255,255,255,.68); max-width: 540px; }
+    .invite-btn { border: 0; border-radius: 14px; background: var(--mint); color: var(--navy); padding: 13px 17px; font-weight: 900; white-space: nowrap; }
+    .member-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 20px; }
+    .member-card { padding: 25px; text-align: center; }
+    .member-card .person-face { width: 78px; height: 78px; font-size: 2rem; margin-bottom: 12px; }
+    .member-card h3 { margin: 0; }
+    .member-card > p { color: var(--muted); font-size: .82rem; margin: 3px 0 16px; }
+    .mini-status { border-radius: 13px; padding: 10px; background: var(--canvas); font-size: .8rem; }
+
+    .bottom-nav { display: none; }
+    .backdrop { position: fixed; inset: 0; background: rgba(8,22,40,.48); z-index: 20; opacity: 0; pointer-events: none; transition: .25s; backdrop-filter: blur(4px); }
+    .backdrop.open { opacity: 1; pointer-events: auto; }
+    .sheet { position: fixed; z-index: 21; right: 0; top: 0; height: 100vh; width: min(480px, 100%); background: white; padding: 26px; transform: translateX(102%); transition: .32s ease; box-shadow: -18px 0 50px rgba(0,0,0,.18); overflow-y: auto; }
+    .sheet.open { transform: translateX(0); }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .sheet-head h2 { margin: 0; font-size: 1.4rem; }
+    .close-btn { width: 40px; height: 40px; border: 0; border-radius: 12px; background: var(--canvas); font-size: 1.2rem; }
+    .chat { display: grid; gap: 13px; }
+    .bubble { max-width: 88%; padding: 14px 16px; border-radius: 18px 18px 18px 5px; background: var(--canvas); }
+    .bubble.me { margin-left: auto; background: var(--navy); color: white; border-radius: 18px 18px 5px 18px; }
+    .choice-label { margin: 25px 0 10px; font-weight: 800; }
+    .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+    .choice { border: 1px solid var(--line); background: white; border-radius: 14px; padding: 13px; text-align: left; font-weight: 700; }
+    .choice.selected { border-color: var(--mint); background: var(--mint-soft); }
+    .symptom-input { width: 100%; min-height: 90px; resize: vertical; border: 1px solid var(--line); border-radius: 15px; padding: 14px; margin-top: 12px; }
+    .sheet .primary-btn { width: 100%; justify-content: center; margin-top: 18px; }
+    .toast { position: fixed; z-index: 40; left: 50%; bottom: 30px; transform: translate(-50%, 20px); background: var(--navy); color: white; padding: 13px 18px; border-radius: 14px; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: .25s; font-weight: 700; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 1050px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .side-stack { grid-template-columns: 1fr 1fr; }
+      .feed-layout { grid-template-columns: 1fr; }
+      .feed-aside { position: static; }
+      .member-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 760px) {
+      body { padding-bottom: 78px; }
+      .app-shell { display: block; }
+      .sidebar { display: none; }
+      .topbar { height: 70px; padding: 0 18px; }
+      .profile-chip span:last-child { display: none; }
+      .page { padding: 0 16px 26px; }
+      .dashboard { display: block; }
+      .health-card { min-height: 0; }
+      .health-header { padding: 22px 20px 0; }
+      .avatar-stage { min-height: 390px; }
+      .avatar-img { height: 390px; }
+      .health-bottom { padding: 16px 18px 20px; }
+      .health-bottom p { max-width: 145px; }
+      .side-stack { display: grid; grid-template-columns: 1fr; margin-top: 16px; gap: 16px; }
+      .family-card, .today-card { padding: 20px; }
+      .bottom-nav { position: fixed; z-index: 10; bottom: 0; left: 0; right: 0; height: 72px; background: rgba(255,255,255,.96); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); backdrop-filter: blur(12px); }
+      .bottom-nav .nav-item { flex-direction: column; justify-content: center; gap: 2px; padding: 7px; border-radius: 0; color: #7a8799; font-size: .69rem; text-align: center; }
+      .bottom-nav .nav-item.active { color: var(--navy); background: transparent; }
+      .bottom-nav .nav-item.active svg { color: #13aa81; }
+      .bottom-nav svg { width: 22px; height: 22px; }
+      .section-heading { display: block; margin-top: 0; }
+      .feed-layout, .records-grid, .member-grid { grid-template-columns: 1fr; }
+      .feed-aside { display: none; }
+      .composer { padding: 16px; }
+      .post { padding: 19px; }
+      .measure-grid { grid-template-columns: 1fr; }
+      .measure { border-right: 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+      .score-card { grid-column: auto; grid-template-columns: 1fr; text-align: center; padding: 24px 20px; }
+      .bar-row { grid-template-columns: 75px 1fr 45px; text-align: left; }
+      .family-hero { display: block; padding: 24px; }
+      .family-hero .invite-btn { margin-top: 20px; }
+      .sheet { padding: 20px; }
+      .toast { bottom: 92px; width: calc(100% - 32px); text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">온</div><div><div class="brand-name">온기</div><small>우리 가족 건강 습관</small></div></div>
+      <nav class="nav-list" aria-label="주요 메뉴">
+        <button class="nav-item active" data-page="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg>오늘</button>
+        <button class="nav-item" data-page="feed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/></svg>가족 소식</button>
+        <button class="nav-item" data-page="records"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>건강 기록</button>
+        <button class="nav-item" data-page="family"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>우리 가족</button>
+      </nav>
+      <div class="privacy"><strong>🔒 가족만 볼 수 있어요</strong>기록별로 공유 범위를 직접 정할 수 있습니다.</div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <h1 id="pageTitle">좋은 아침이에요, 민수님</h1>
+        <div class="top-actions"><button class="icon-btn" aria-label="알림">🔔</button><div class="profile-chip"><span class="mini-avatar">🧑🏻</span><span>김민수</span></div></div>
+      </header>
+
+      <section class="page active" id="home">
+        <div class="dashboard">
+          <article class="card health-card">
+            <div class="health-header"><div><div class="eyebrow">오늘의 내 몸</div><h2>어디가 불편한가요?</h2></div><span class="status-pill">● 전반적으로 좋아요</span></div>
+            <div class="avatar-stage">
+              <img class="avatar-img" src="assets/health-avatar.png" alt="몸 상태를 기록할 수 있는 나의 건강 캐릭터" />
+              <button class="hotspot head" data-part="머리" aria-label="머리 상태 기록"></button>
+              <button class="hotspot shoulder" data-part="어깨" aria-label="어깨 상태 기록"></button>
+              <button class="hotspot stomach" data-part="배" aria-label="배 상태 기록"></button>
+              <button class="hotspot knee" data-part="무릎" aria-label="무릎 상태 기록"></button>
+            </div>
+            <div class="health-bottom"><p>몸에서 불편한 곳을 누르거나 대화로 남겨보세요.</p><button class="primary-btn" id="openSymptom">＋ 건강 기록하기</button></div>
+          </article>
+
+          <div class="side-stack">
+            <article class="card family-card"><div class="card-title"><h3>우리 가족은 지금</h3><button class="text-btn" data-go="family">모두 보기</button></div><div class="family-row">
+              <div class="person"><div class="person-face">👩🏻<i class="state"></i></div><div class="person-name">엄마</div><div class="person-state">산책 완료</div></div>
+              <div class="person"><div class="person-face">👨🏻<i class="state care"></i></div><div class="person-name">아빠</div><div class="person-state">허리 뻐근</div></div>
+              <div class="person"><div class="person-face">👩🏻‍🦰<i class="state"></i></div><div class="person-name">지연</div><div class="person-state">컨디션 좋음</div></div>
+              <div class="person"><button class="person-face" id="addFamily" style="border:1px dashed #a7bec5;background:white;color:#6b7b8e">＋</button><div class="person-name">초대</div><div class="person-state">가족 추가</div></div>
+            </div></article>
+            <article class="card today-card"><div class="card-title"><h3>오늘 가족 소식</h3><button class="text-btn" data-go="feed">소식 보기</button></div><div class="timeline">
+              <div class="timeline-item"><div class="event-icon mint">✓</div><div class="event-copy"><strong>엄마가 아침 약을 드셨어요</strong><span>혈압약 복용을 기록했어요</span></div><span class="time">08:10</span></div>
+              <div class="timeline-item"><div class="event-icon amber">⌁</div><div class="event-copy"><strong>아빠가 허리 통증을 남겼어요</strong><span>“어제보다 조금 나아요”</span></div><span class="time">07:42</span></div>
+              <div class="timeline-item"><div class="event-icon">▤</div><div class="event-copy"><strong>건강검진 결과가 추가됐어요</strong><span>김민수 · 2026 정기검진</span></div><span class="time">어제</span></div>
+            </div></article>
+            <article class="quick-log"><div><strong>오늘 기분은 어때요?</strong><span>한 번 누르면 기록돼요</span></div><div class="mood-row"><button class="mood" aria-label="기분 좋음">😊</button><button class="mood" aria-label="보통">🙂</button><button class="mood" aria-label="피곤함">😮‍💨</button></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="feed">
+        <div class="section-heading"><div><h2>가족 소식</h2><p>서로의 일상을 가볍게 확인하고 따뜻하게 응원해요.</p></div></div>
+        <div class="feed-layout"><div>
+          <div class="card composer"><span class="mini-avatar">🧑🏻</span><button class="fake-input" id="composerOpen">오늘 내 건강은 어떤가요?</button></div>
+          <article class="card post"><div class="post-head"><div class="person-face" style="width:46px;height:46px;border-radius:16px;margin:0;font-size:1.35rem">👩🏻</div><div class="meta"><strong>엄마</strong><span>오늘 오전 9:12 · 가족 전체</span></div><span class="tag">좋은 소식</span></div><p class="post-copy">아침에 동네 한 바퀴 걸었어요. 무릎도 오늘은 괜찮고, 공기가 좋아서 기분까지 상쾌하네요 🌿</p><div class="measure-grid"><div class="measure"><span>걸음 수</span><strong>4,280</strong></div><div class="measure"><span>운동 시간</span><strong>38분</strong></div><div class="measure"><span>기분</span><strong>좋음</strong></div></div><div class="post-actions"><button class="like">♡ 응원 3</button><button>💬 댓글 1</button></div></article>
+          <article class="card post"><div class="post-head"><div class="person-face" style="width:46px;height:46px;border-radius:16px;margin:0;font-size:1.35rem;background:var(--amber-soft)">👨🏻</div><div class="meta"><strong>아빠</strong><span>오늘 오전 7:42 · 자녀에게만</span></div><span class="tag amber">살펴봐 주세요</span></div><p class="post-copy">아침에 일어날 때 허리가 조금 뻐근했어요. 온찜질하고 나니 어제보다는 나아졌습니다.</p><div class="measure-grid"><div class="measure"><span>불편한 곳</span><strong>허리</strong></div><div class="measure"><span>통증 정도</span><strong>3 / 10</strong></div><div class="measure"><span>지속 시간</span><strong>2일째</strong></div></div><div class="post-actions"><button class="like">♡ 응원 2</button><button>💬 댓글 2</button></div></article>
+        </div><aside class="card feed-aside"><h3 style="margin:0">가족 챙김 현황</h3><div class="check-list"><div class="check"><i>✓</i>엄마 혈압약 복용 확인</div><div class="check"><i>✓</i>아빠 허리 상태 확인</div><div class="check"><i>✓</i>지연이의 검진일 공유</div></div></aside></div>
+      </section>
+
+      <section class="page" id="records">
+        <div class="section-heading"><div><h2>건강 기록</h2><p>검진 결과와 일상 기록을 한곳에서 이어서 봐요.</p></div><button class="primary-btn" id="uploadRecord">＋ 검진 결과 추가</button></div>
+        <div class="records-grid">
+          <article class="card score-card"><div class="score-ring"><div><strong>84</strong><span>건강 균형 점수</span></div></div><div class="score-summary"><h3>전반적으로 잘 관리하고 있어요</h3><p>지난 검진과 비교해 혈압과 공복혈당이 안정적으로 유지되고 있어요. 콜레스테롤은 조금 더 살펴보세요.</p><div class="bar-row"><span>혈압</span><div class="bar"><i style="width:92%"></i></div><b>좋음</b></div><div class="bar-row"><span>혈당</span><div class="bar"><i style="width:83%"></i></div><b>안정</b></div><div class="bar-row"><span>콜레스테롤</span><div class="bar"><i style="width:63%;background:var(--amber)"></i></div><b>관심</b></div></div></article>
+          <article class="card record-card"><div class="card-title"><h3>2026 정기 건강검진</h3><span class="tag">2026.08.21</span></div><div class="record-list"><div class="record-row"><div><b>혈압</b><span>수축기 / 이완기</span></div><div class="value good">118 / 76</div></div><div class="record-row"><div><b>공복혈당</b><span>정상 70–99 mg/dL</span></div><div class="value good">92</div></div><div class="record-row"><div><b>총 콜레스테롤</b><span>권장 200 mg/dL 미만</span></div><div class="value watch">211</div></div><div class="record-row"><div><b>BMI</b><span>체질량지수</span></div><div class="value good">22.4</div></div></div></article>
+          <article class="card record-card"><div class="card-title"><h3>새 기록 가져오기</h3></div><div class="upload-zone" id="uploadZone"><div class="big-icon">⇧</div><strong>검진표 사진이나 PDF 올리기</strong><span>프로토타입에서는 샘플 분석 결과를 보여드려요</span></div><div style="margin-top:16px;color:var(--muted);font-size:.78rem">의료진의 진단을 대신하지 않으며, 이상 수치는 전문의와 상담하세요.</div></article>
+        </div>
+      </section>
+
+      <section class="page" id="family">
+        <article class="card family-hero"><div><h2>김씨네 건강 가족</h2><p>가족 4명이 함께 기록하고 있어요. 내가 남긴 민감한 기록은 공개 대상을 매번 선택할 수 있습니다.</p></div><button class="invite-btn" id="inviteFamily">＋ 가족 초대하기</button></article>
+        <div class="member-grid"><article class="card member-card"><div class="person-face">🧑🏻<i class="state"></i></div><h3>김민수</h3><p>나 · 관리자</p><div class="mini-status">오늘 기분 🙂 · 최근 검진 8월</div></article><article class="card member-card"><div class="person-face">👩🏻<i class="state"></i></div><h3>박영희</h3><p>엄마 · 68세</p><div class="mini-status">오늘 4,280걸음 · 약 복용 완료</div></article><article class="card member-card"><div class="person-face" style="background:var(--amber-soft)">👨🏻<i class="state care"></i></div><h3>김정호</h3><p>아빠 · 71세</p><div class="mini-status">허리 통증 3/10 · 관심 필요</div></article><article class="card member-card"><div class="person-face" style="background:var(--rose-soft)">👩🏻‍🦰<i class="state"></i></div><h3>김지연</h3><p>동생 · 35세</p><div class="mini-status">컨디션 좋음 · 최근 기록 어제</div></article></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="모바일 메뉴">
+    <button class="nav-item active" data-page="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg>오늘</button>
+    <button class="nav-item" data-page="feed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/></svg>가족 소식</button>
+    <button class="nav-item" data-page="records"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M14 2v6h6"/></svg>기록</button>
+    <button class="nav-item" data-page="family"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>가족</button>
+  </nav>
+
+  <div class="backdrop" id="backdrop"></div>
+  <aside class="sheet" id="symptomSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-head"><div><div class="eyebrow">대화로 간단하게</div><h2 id="sheetTitle">오늘 몸 상태 기록</h2></div><button class="close-btn" id="closeSheet" aria-label="닫기">×</button></div>
+    <div class="chat"><div class="bubble">안녕하세요, 민수님. 오늘은 어디가 불편하신가요?</div><div class="bubble me" id="userBubble" hidden></div><div class="bubble" id="replyBubble" hidden>알겠어요. 어느 정도 불편한지 알려주세요. 기록은 가족에게 공유하기 전 다시 확인할 수 있어요.</div></div>
+    <div class="choice-label">불편한 곳</div><div class="choice-grid"><button class="choice">머리</button><button class="choice">목·어깨</button><button class="choice">허리</button><button class="choice">배</button><button class="choice">무릎·다리</button><button class="choice">기타</button></div>
+    <textarea class="symptom-input" id="symptomText" placeholder="예: 아침부터 오른쪽 어깨가 뻐근해요"></textarea>
+    <div class="choice-label">불편한 정도</div><div class="choice-grid"><button class="choice">🙂 가벼워요</button><button class="choice">😣 꽤 불편해요</button></div>
+    <button class="primary-btn" id="saveSymptom">이 내용으로 기록하기</button>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite">기록했어요. 가족 공유는 아직 꺼져 있어요.</div>
+
+  <script>
+    const titles = { home: '좋은 아침이에요, 민수님', feed: '가족 소식', records: '건강 기록', family: '우리 가족' };
+    function goTo(page) {
+      document.querySelectorAll('.page').forEach(el => el.classList.toggle('active', el.id === page));
+      document.querySelectorAll('.nav-item[data-page]').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+      document.getElementById('pageTitle').textContent = titles[page];
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.querySelectorAll('[data-page]').forEach(btn => btn.addEventListener('click', () => goTo(btn.dataset.page)));
+    document.querySelectorAll('[data-go]').forEach(btn => btn.addEventListener('click', () => goTo(btn.dataset.go)));
+
+    const sheet = document.getElementById('symptomSheet');
+    const backdrop = document.getElementById('backdrop');
+    const symptomText = document.getElementById('symptomText');
+    const userBubble = document.getElementById('userBubble');
+    const replyBubble = document.getElementById('replyBubble');
+    function openSheet(part = '') {
+      sheet.classList.add('open'); backdrop.classList.add('open'); document.body.style.overflow = 'hidden';
+      if (part) { symptomText.value = part + '가 불편해요'; selectChoice(part); }
+      setTimeout(() => symptomText.focus(), 320);
+    }
+    function closeSheet() { sheet.classList.remove('open'); backdrop.classList.remove('open'); document.body.style.overflow = ''; }
+    function selectChoice(part) { document.querySelectorAll('.choice').forEach(c => c.classList.toggle('selected', c.textContent.includes(part))); }
+    document.getElementById('openSymptom').addEventListener('click', () => openSheet());
+    document.getElementById('composerOpen').addEventListener('click', () => openSheet());
+    document.getElementById('closeSheet').addEventListener('click', closeSheet);
+    backdrop.addEventListener('click', closeSheet);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+    document.querySelectorAll('.hotspot').forEach(btn => btn.addEventListener('click', () => openSheet(btn.dataset.part)));
+    document.querySelectorAll('.choice').forEach(btn => btn.addEventListener('click', () => {
+      const group = btn.parentElement; group.querySelectorAll('.choice').forEach(c => c.classList.remove('selected')); btn.classList.add('selected');
+      if (!btn.textContent.includes('가벼워요') && !btn.textContent.includes('불편해요')) symptomText.value = btn.textContent.trim() + '가 불편해요';
+      userBubble.textContent = symptomText.value; userBubble.hidden = false; replyBubble.hidden = false;
+    }));
+    function showToast(message) { const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); }
+    document.getElementById('saveSymptom').addEventListener('click', () => { closeSheet(); showToast('기록했어요. 가족 공유는 아직 꺼져 있어요.'); });
+    document.querySelectorAll('.mood').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.mood').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); showToast('오늘의 기분을 기록했어요 ' + btn.textContent); }));
+    document.querySelectorAll('.like').forEach(btn => btn.addEventListener('click', () => { btn.classList.toggle('liked'); btn.textContent = btn.classList.contains('liked') ? '♥ 응원했어요' : '♡ 응원'; }));
+    ['addFamily','inviteFamily'].forEach(id => document.getElementById(id).addEventListener('click', () => showToast('초대 링크를 만들었어요. 가족에게 보내보세요.')));
+    ['uploadRecord','uploadZone'].forEach(id => document.getElementById(id).addEventListener('click', () => showToast('샘플 검진표를 분석했어요. 결과를 확인해보세요.')));
+
+    const modelContext = document.modelContext;
+    if (modelContext?.registerTool) {
+      const allowedPages = ['home', 'feed', 'records', 'family'];
+      const register = tool => Promise.resolve(modelContext.registerTool(tool)).catch(() => {});
+      register({
+        name: 'navigate_health_view',
+        title: '건강 화면 열기',
+        description: '온기 앱에서 오늘, 가족 소식, 건강 기록, 우리 가족 중 한 화면으로 이동합니다.',
+        inputSchema: { type: 'object', properties: { view: { type: 'string', enum: allowedPages } }, required: ['view'], additionalProperties: false },
+        annotations: { readOnlyHint: true, untrustedContentHint: false },
+        execute(input) {
+          if (!allowedPages.includes(input?.view)) throw new Error('지원하지 않는 화면입니다.');
+          goTo(input.view);
+          return { view: input.view, title: titles[input.view] };
+        }
+      });
+      register({
+        name: 'start_symptom_record',
+        title: '증상 기록 시작',
+        description: '선택한 몸 부위가 입력된 건강 기록 대화창을 엽니다. 아직 기록을 저장하지는 않습니다.',
+        inputSchema: { type: 'object', properties: { bodyPart: { type: 'string', minLength: 1, maxLength: 20 } }, required: ['bodyPart'], additionalProperties: false },
+        annotations: { readOnlyHint: false, untrustedContentHint: false },
+        execute(input) {
+          if (typeof input?.bodyPart !== 'string' || !input.bodyPart.trim()) throw new Error('몸 부위를 입력해 주세요.');
+          goTo('home'); openSheet(input.bodyPart.trim());
+          return { status: 'draft', bodyPart: input.bodyPart.trim(), sharedWithFamily: false };
+        }
+      });
+      register({
+        name: 'record_daily_mood',
+        title: '오늘 기분 기록',
+        description: '오늘의 기분을 좋음, 보통, 피곤함 중 하나로 기록하고 화면에 반영합니다.',
+        inputSchema: { type: 'object', properties: { mood: { type: 'string', enum: ['좋음', '보통', '피곤함'] } }, required: ['mood'], additionalProperties: false },
+        annotations: { readOnlyHint: false, untrustedContentHint: false },
+        execute(input) {
+          const moodMap = { '좋음': 0, '보통': 1, '피곤함': 2 };
+          if (!(input?.mood in moodMap)) throw new Error('지원하지 않는 기분입니다.');
+          const moods = [...document.querySelectorAll('.mood')];
+          moods.forEach((button, index) => button.classList.toggle('selected', index === moodMap[input.mood]));
+          showToast('오늘의 기분을 기록했어요.');
+          return { status: 'recorded', mood: input.mood };
+        }
+      });
+    }
+  </script>
+</body>
+</html>
