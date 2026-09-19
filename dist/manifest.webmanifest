@@ -1,0 +1,39 @@
+{
+  "name": "온기 — 우리 가족 건강 기록",
+  "short_name": "온기",
+  "description": "가족의 오늘 건강과 검진 기록을 편안하게 나누는 앱",
+  "lang": "ko-KR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f2f7f8",
+  "theme_color": "#0b1d35",
+  "categories": ["health", "lifestyle", "family"],
+  "icons": [
+    {
+      "src": "/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "건강 기록하기",
+      "short_name": "건강 기록",
+      "url": "/?action=record"
+    },
+    {
+      "name": "가족 소식 보기",
+      "short_name": "가족 소식",
+      "url": "/?view=feed"
+    }
+  ]
+}

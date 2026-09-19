@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b1d35" />
   <meta name="description" content="가족의 오늘 건강과 검진 기록을 편안하게 나누는 앱, 온기" />
+  <meta name="application-name" content="온기" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="온기" />
   <title>온기 · 가족 건강 기록</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/app-icon.png" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230b1d35'/%3E%3Cpath d='M32 49S14 39 14 25c0-10 12-14 18-5 6-9 18-5 18 5 0 14-18 24-18 24Z' fill='%2367e8c0'/%3E%3Cpath d='M22 31h7l3-7 4 14 3-7h5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <style>
     :root {
@@ -269,7 +275,7 @@
     <main>
       <header class="topbar">
         <h1 id="pageTitle">좋은 아침이에요, 민수님</h1>
-        <div class="top-actions"><button class="icon-btn" aria-label="알림">🔔</button><div class="profile-chip"><span class="mini-avatar">🧑🏻</span><span>김민수</span></div></div>
+        <div class="top-actions"><button class="icon-btn" id="installApp" aria-label="앱 설치" title="앱 설치">⇩</button><button class="icon-btn" aria-label="알림">🔔</button><div class="profile-chip"><span class="mini-avatar">🧑🏻</span><span>김민수</span></div></div>
       </header>
 
       <section class="page active" id="home">
@@ -386,6 +392,35 @@
     document.querySelectorAll('.like').forEach(btn => btn.addEventListener('click', () => { btn.classList.toggle('liked'); btn.textContent = btn.classList.contains('liked') ? '♥ 응원했어요' : '♡ 응원'; }));
     ['addFamily','inviteFamily'].forEach(id => document.getElementById(id).addEventListener('click', () => showToast('초대 링크를 만들었어요. 가족에게 보내보세요.')));
     ['uploadRecord','uploadZone'].forEach(id => document.getElementById(id).addEventListener('click', () => showToast('샘플 검진표를 분석했어요. 결과를 확인해보세요.')));
+
+    let installPrompt = null;
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault();
+      installPrompt = event;
+      document.getElementById('installApp').style.color = 'var(--mint)';
+    });
+    document.getElementById('installApp').addEventListener('click', async () => {
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        showToast('이미 앱으로 설치되어 있어요.');
+        return;
+      }
+      if (installPrompt) {
+        installPrompt.prompt();
+        await installPrompt.userChoice;
+        installPrompt = null;
+      } else {
+        showToast('아이폰은 공유 버튼에서 “홈 화면에 추가”를 선택해 주세요.');
+      }
+    });
+    window.addEventListener('appinstalled', () => showToast('온기 앱 설치가 완료됐어요.'));
+
+    const params = new URLSearchParams(location.search);
+    if (params.get('view') && titles[params.get('view')]) goTo(params.get('view'));
+    if (params.get('action') === 'record') setTimeout(() => openSheet(), 250);
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+    }
 
     const modelContext = document.modelContext;
     if (modelContext?.registerTool) {
