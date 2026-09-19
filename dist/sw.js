@@ -1,4 +1,4 @@
-const CACHE_NAME = 'we-family-app-v5';
+const CACHE_NAME = 'we-family-app-v6';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -8,7 +8,11 @@ const APP_SHELL = [
   '/assets/health-avatar.png',
   '/assets/mother-avatar.png',
   '/assets/father-avatar.png',
-  '/assets/sister-avatar.png'
+  '/assets/sister-avatar.png',
+  '/assets/invite-baby.png',
+  '/assets/invite-teen.png',
+  '/assets/invite-mid-woman.png',
+  '/assets/invite-mid-man.png'
 ];
 
 self.addEventListener('install', event => {
