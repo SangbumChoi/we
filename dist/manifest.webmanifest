@@ -1,7 +1,7 @@
 {
-  "name": "온기 — 우리 가족 건강 기록",
-  "short_name": "온기",
-  "description": "가족의 오늘 건강과 검진 기록을 편안하게 나누는 앱",
+  "name": "we — 우리 가족 건강",
+  "short_name": "we",
+  "description": "우리 가족의 건강 상태와 기록을 한눈에 확인하는 앱",
   "lang": "ko-KR",
   "start_url": "/",
   "scope": "/",
@@ -26,14 +26,14 @@
   ],
   "shortcuts": [
     {
-      "name": "건강 기록하기",
+      "name": "건강 기록 보기",
       "short_name": "건강 기록",
-      "url": "/?action=record"
+      "url": "/?view=records"
     },
     {
-      "name": "가족 소식 보기",
-      "short_name": "가족 소식",
-      "url": "/?view=feed"
+      "name": "우리 가족 보기",
+      "short_name": "우리 가족",
+      "url": "/"
     }
   ]
 }

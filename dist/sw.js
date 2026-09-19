@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ongi-app-v2';
+const CACHE_NAME = 'we-family-app-v3';
 const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/app-icon.svg', '/app-icon.png', '/assets/health-avatar.png'];
 
 self.addEventListener('install', event => {
