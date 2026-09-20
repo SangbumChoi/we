@@ -1,4 +1,4 @@
-const CACHE_NAME = 'we-family-app-v8';
+const CACHE_NAME = 'we-family-app-v9';
 const APP_SHELL = [
   '/',
   '/index.html',
