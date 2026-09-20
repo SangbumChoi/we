@@ -16,6 +16,8 @@ https://check-family-health.com
 - AI 건강 대화 요약 기록
 - 설치 가능한 PWA 구성
 - Supabase 가족 그룹 데이터 모델과 가족방별 접근 제어(RLS)
+- 가족방 생성 한도·방별 인원 한도와 평생 확장 권한 모델
+- 구성원·가족방 상태 변경 및 AI/전문가 상담 이력 보존
 
 ## Supabase
 
