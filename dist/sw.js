@@ -1,7 +1,8 @@
-const CACHE_NAME = 'we-family-app-v12';
+const CACHE_NAME = 'we-family-app-v13';
 const APP_SHELL = [
   '/',
   '/index.html',
+  '/config.js',
   '/manifest.webmanifest',
   '/app-icon.svg',
   '/app-icon.png',
